@@ -1,6 +1,7 @@
 defmodule Shin.IdP do
 
   alias __MODULE__
+  require Logger
 
   @default_metric_groups [
     :core,
@@ -45,7 +46,7 @@ defmodule Shin.IdP do
   end
 
   def configure(base_url, options \\ []) when is_binary(base_url) do
-    with {:ok, url} <- validate_url(base_url),
+    with {:ok, url} <- validate_url(base_url, options),
          {:ok, opts} <- validate_opts(options) do
       {:ok, struct(IdP, merge(url, opts))}
     else
@@ -116,7 +117,7 @@ defmodule Shin.IdP do
     "#{idp.metrics_path}/#{group}"
   end
 
-  defp validate_url(url) do
+  defp validate_url(url, options) do
     parsed_url = URI.parse(url)
     case parsed_url do
       %URI{scheme: nil} -> {:error, "Missing scheme (https://)"}
@@ -124,7 +125,14 @@ defmodule Shin.IdP do
       %URI{host: host} ->
         case :inet.gethostbyname(Kernel.to_charlist(host)) do
           {:ok, _} -> {:ok, url}
-          {:error, _} -> {:error, "Invalid hostname (DNS lookup failed)"}
+          {:error, _} ->
+            if options[:no_dns_check] do
+              Logger.warn "Invalid hostname (DNS lookup failed)"
+              {:ok, url}
+            else
+              {:error, "Invalid hostname (DNS lookup failed)"}
+            end
+
         end
     end
   end
