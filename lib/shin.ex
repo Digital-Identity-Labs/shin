@@ -6,7 +6,7 @@ defmodule Shin do
   alias Shin.Metrics
   alias Shin.Reports
 
-  def idp(idp, opts) do
+  def idp(idp, opts \\ []) do
     IdP.configure(idp, opts)
   end
 
