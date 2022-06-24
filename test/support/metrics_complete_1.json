@@ -2,10 +2,10 @@
   "version": "4.0.0",
   "gauges": {
     "cores.available": {
-      "value": 2
+      "value": 4
     },
     "host.name": {
-      "value": "testshibboleth1"
+      "value": "idpprod1"
     },
     "java.class.path": {
       "value": "/opt/jetty/lib/mail/javax.mail.glassfish-1.4.1.v201005082020.jar:/opt/jetty-shib/resources:/opt/jetty/lib/servlet-api-3.1.jar:/opt/jetty/lib/jetty-schemas-3.1.jar:/opt/jetty/lib/jetty-http-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-server-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-xml-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-util-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-io-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-jndi-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-security-9.4.46.v20220331.jar:/opt/jetty/lib/transactions/javax.transaction-api-1.3.jar:/opt/jetty/lib/jetty-servlet-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-webapp-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-plus-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-annotations-9.4.46.v20220331.jar:/opt/jetty/lib/annotations/asm-9.2.jar:/opt/jetty/lib/annotations/asm-analysis-9.2.jar:/opt/jetty/lib/annotations/asm-commons-9.2.jar:/opt/jetty/lib/annotations/asm-tree-9.2.jar:/opt/jetty/lib/annotations/javax.annotation-api-1.3.2.jar:/opt/jetty/lib/apache-jsp/org.eclipse.jdt.ecj-3.19.0.jar:/opt/jetty/lib/apache-jsp/org.eclipse.jetty.apache-jsp-9.4.44.v20210927.jar:/opt/jetty/lib/apache-jsp/org.eclipse.jetty.apache-jsp-9.4.46.v20220331.jar:/opt/jetty/lib/apache-jsp/org.mortbay.jasper.apache-el-8.5.70.jar:/opt/jetty/lib/apache-jsp/org.mortbay.jasper.apache-jsp-8.5.70.jar:/opt/jetty/lib/apache-jstl/org.apache.taglibs.taglibs-standard-impl-1.2.5.jar:/opt/jetty/lib/apache-jstl/org.apache.taglibs.taglibs-standard-spec-1.2.5.jar:/opt/jetty/lib/jetty-client-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-deploy-9.4.46.v20220331.jar:/opt/jetty/lib/jetty-servlets-9.4.46.v20220331.jar:/opt/jetty/lib/websocket/javax.websocket-api-1.0.jar:/opt/jetty/lib/websocket/javax-websocket-client-impl-9.4.44.v20210927.jar:/opt/jetty/lib/websocket/javax-websocket-client-impl-9.4.46.v20220331.jar:/opt/jetty/lib/websocket/javax-websocket-server-impl-9.4.44.v20210927.jar:/opt/jetty/lib/websocket/javax-websocket-server-impl-9.4.46.v20220331.jar:/opt/jetty/lib/websocket/websocket-api-9.4.44.v20210927.jar:/opt/jetty/lib/websocket/websocket-api-9.4.46.v20220331.jar:/opt/jetty/lib/websocket/websocket-client-9.4.44.v20210927.jar:/opt/jetty/lib/websocket/websocket-client-9.4.46.v20220331.jar:/opt/jetty/lib/websocket/websocket-common-9.4.44.v20210927.jar:/opt/jetty/lib/websocket/websocket-common-9.4.46.v20220331.jar:/opt/jetty/lib/websocket/websocket-server-9.4.44.v20210927.jar:/opt/jetty/lib/websocket/websocket-server-9.4.46.v20220331.jar:/opt/jetty/lib/websocket/websocket-servlet-9.4.44.v20210927.jar:/opt/jetty/lib/websocket/websocket-servlet-9.4.46.v20220331.jar"
@@ -190,10 +190,10 @@
     "org.opensaml.saml.metadata.resolver.impl.FunctionDrivenDynamicHTTPMetadataResolver.ukfMDQ.ratioGauge.fetchToResolve": {
       "value": 1
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcBilateral.gauge.numLiveEntityIDs": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exBilateral.gauge.numLiveEntityIDs": {
       "value": 0
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcBilateral.gauge.persistentCacheInitialization": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exBilateral.gauge.persistentCacheInitialization": {
       "value": {
         "enabled": false,
         "processingTime": 0,
@@ -205,13 +205,13 @@
         "entriesSkippedProcessingException": 0
       }
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcBilateral.ratioGauge.fetchToResolve": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exBilateral.ratioGauge.fetchToResolve": {
       "value": "NaN"
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcLocal.gauge.numLiveEntityIDs": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exLocal.gauge.numLiveEntityIDs": {
       "value": 0
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcLocal.gauge.persistentCacheInitialization": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exLocal.gauge.persistentCacheInitialization": {
       "value": {
         "enabled": false,
         "processingTime": 0,
@@ -223,13 +223,13 @@
         "entriesSkippedProcessingException": 0
       }
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcLocal.ratioGauge.fetchToResolve": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exLocal.ratioGauge.fetchToResolve": {
       "value": 1
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcOverride.gauge.numLiveEntityIDs": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exOverride.gauge.numLiveEntityIDs": {
       "value": 0
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcOverride.gauge.persistentCacheInitialization": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exOverride.gauge.persistentCacheInitialization": {
       "value": {
         "enabled": false,
         "processingTime": 0,
@@ -241,7 +241,7 @@
         "entriesSkippedProcessingException": 0
       }
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcOverride.ratioGauge.fetchToResolve": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exOverride.ratioGauge.fetchToResolve": {
       "value": 1
     },
     "org.opensaml.version": {
@@ -301,7 +301,7 @@
       "duration_units": "seconds",
       "rate_units": "calls/second"
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcBilateral.timer.fetchFromOriginSource": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exBilateral.timer.fetchFromOriginSource": {
       "count": 0,
       "max": 0,
       "mean": 0,
@@ -321,7 +321,7 @@
       "duration_units": "seconds",
       "rate_units": "calls/second"
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcBilateral.timer.resolve": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exBilateral.timer.resolve": {
       "count": 0,
       "max": 0,
       "mean": 0,
@@ -341,7 +341,7 @@
       "duration_units": "seconds",
       "rate_units": "calls/second"
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcLocal.timer.fetchFromOriginSource": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exLocal.timer.fetchFromOriginSource": {
       "count": 1,
       "max": 0,
       "mean": 0,
@@ -361,7 +361,7 @@
       "duration_units": "seconds",
       "rate_units": "calls/second"
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcLocal.timer.resolve": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exLocal.timer.resolve": {
       "count": 1,
       "max": 0,
       "mean": 0,
@@ -381,7 +381,7 @@
       "duration_units": "seconds",
       "rate_units": "calls/second"
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcOverride.timer.fetchFromOriginSource": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exOverride.timer.fetchFromOriginSource": {
       "count": 1,
       "max": 0,
       "mean": 0,
@@ -401,7 +401,7 @@
       "duration_units": "seconds",
       "rate_units": "calls/second"
     },
-    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.bcOverride.timer.resolve": {
+    "org.opensaml.saml.metadata.resolver.impl.LocalDynamicMetadataResolver.exOverride.timer.resolve": {
       "count": 1,
       "max": 0,
       "mean": 0,
