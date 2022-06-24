@@ -39,6 +39,18 @@ defmodule ShinTest do
         } ->
           %Tesla.Env{status: 500, body: "Error 500\n"}
 
+        %{
+          method: :get,
+          url: "https://login.localhost.demo.university/idp/profile/admin/metrics/core"
+        } ->
+          %Tesla.Env{status: 200, body: MetricsExamples.core()}
+
+        %{
+          method: :get,
+          url: "https://login-error.localhost.demo.university/idp/profile/admin/metrics/core"
+        } ->
+          %Tesla.Env{status: 500, body: "Error 404 Page Not Found\n"}
+
       end
     )
     :ok
@@ -154,25 +166,29 @@ defmodule ShinTest do
 
   describe "metrics/2" do
 
-    #    test "will return a map of a subset of raw metrics data if the service is available and the group is known" do
-    #      assert false
-    #    end
-    #
-    #    test "will complain if passed an unknown group" do
-    #      assert false
-    #    end
-    #
-    #    test "will produce a decent error if service is unavailable" do
-    #      assert false
-    #    end
-    #
-    #    test "can be passed an IdP record (expected)" do
-    #      assert false
-    #    end
-    #
-    #    test "can be passed a base URL for the IdP" do
-    #      assert false
-    #    end
+        test "will return a map of a subset of raw metrics data if the service is available and the group is known" do
+          {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+          assert {:ok, %{"gauges" => %{"cores.available" => _}}} = Shin.metrics(idp, :core)
+        end
+
+        test "will complain if passed an unknown group" do
+          {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+          assert {:error, "IdP does not support metric group 'baboon'"}  = Shin.metrics(idp, :baboon)
+        end
+
+        test "will produce a decent error if service is unavailable" do
+          {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
+          assert {:error, "Error 500"} = Shin.metrics(idp, :core)
+        end
+
+        test "can be passed an IdP record (expected)" do
+          {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+          assert {:ok, %{"gauges" => _things}} = Shin.metrics(idp, :core)
+        end
+
+        test "can be passed a base URL for the IdP" do
+          assert {:ok, %{"gauges" => _things}} = Shin.metrics("https://login.localhost.demo.university/idp", :core)
+        end
 
   end
 
