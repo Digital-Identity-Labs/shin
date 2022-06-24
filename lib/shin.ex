@@ -20,7 +20,11 @@ defmodule Shin do
   end
 
   def metrics(idp) do
-    HTTP.get_json(idp, idp.metrics_path)
+    with {:ok, idp} <- prep_idp(idp) do
+      HTTP.get_json(idp, idp.metrics_path)
+    else
+      err -> err
+    end
   end
 
   def metrics(idp, group) do
