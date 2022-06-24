@@ -16,14 +16,22 @@ defmodule Shin.HTTP do
 
   def get_json(idp, path) do
     case Tesla.get(client(idp), path) do
-      {:ok, result} -> {:ok, result.body}
+      {:ok, result} -> if result.status == 200 do
+                         {:ok, result.body}
+                       else
+                         {:error, "Error #{result.status}"}
+                       end
       {:error, msg} -> {:error, msg}
     end
   end
 
   def get_reload(idp, service) do
     case Tesla.get(client(idp, :text), idp.reload_path, query: [id: service]) do
-      {:ok, result} -> {:ok, String.trim(result.body)}
+      {:ok, result} -> if result.status == 200 do
+                          {:ok, String.trim(result.body)}
+                       else
+                          {:error, "Error #{result.status}"}
+                       end
       {:error, msg} -> {:error, msg}
     end
   end
