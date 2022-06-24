@@ -121,6 +121,7 @@ defmodule Shin.IdP do
     parsed_url = URI.parse(url)
     case parsed_url do
       %URI{scheme: nil} -> {:error, "Missing scheme (https://)"}
+      %URI{scheme: scheme} when scheme not in ["http", "https"] -> {:error, "URL scheme is not http: or https:"}
       %URI{host: nil} -> {:error, "Missing hostname"}
       %URI{host: host} ->
         case :inet.gethostbyname(Kernel.to_charlist(host)) do
