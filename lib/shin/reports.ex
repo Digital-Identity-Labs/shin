@@ -20,7 +20,7 @@ defmodule Shin.Reports do
   def produce(metrics, reporter) do
     with {:ok, reporter} <- normalise_reporter(reporter),
          {:ok, metrics} <- check_metrics(metrics, reporter) do
-      reporter.produce(metrics)
+      {:ok, reporter.produce(metrics)}
     else
       err -> err
     end
