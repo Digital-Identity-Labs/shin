@@ -232,29 +232,37 @@ defmodule ShinTest do
 
   describe "report/2" do
 
-    #    test "will return a struct containing processed metrics as specified by the report Module" do
-    #      assert false
-    #    end
+    test "will return a struct containing processed metrics as specified by the report Module" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {:ok, %Shin.Reports.IdPInfo{uptime: _}} = Shin.report(idp, Shin.Reports.IdPInfo)
+    end
 
-    #    test "will return a struct containing processed metrics as specified by the report alias" do
-    #      assert false
-    #    end
+    test "will return a struct containing processed metrics as specified by the report alias" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp, :system_info)
+    end
 
-    #    test "will complain if passed an unknown alias" do
-    #      assert false
-    #    end
-    #
-    #    test "will produce a decent error if service is unavailable" do
-    #      assert false
-    #    end
-    #
-    #    test "can be passed an IdP record (expected)" do
-    #      assert false
-    #    end
-    #
-    #    test "can be passed a base URL for the IdP" do
-    #      assert false
-    #    end
+    test "will complain if passed an unknown alias" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {:error, _} = Shin.report(idp, :badgers)
+    end
+
+    test "will produce a decent error if service is unavailable" do
+      {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
+      assert {:error, "Error 500"} = Shin.report(idp, :system_info)
+    end
+
+    test "can be passed an IdP record (expected)" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp, Shin.Reports.SystemInfo)
+    end
+
+    test "can be passed a base URL for the IdP" do
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(
+               "https://login.localhost.demo.university/idp",
+               :system_info
+             )
+    end
 
   end
 
