@@ -56,6 +56,15 @@ defmodule ShinTest do
     :ok
   end
 
+  {:ok, good_idp} = Shin.idp("https://login.localhost.demo.university/idp")
+  @good_idp good_idp
+
+  {:ok, miss_idp} = Shin.idp("https://login-miss.localhost.demo.university/idp")
+  @miss_idp miss_idp
+
+  {:ok, error_idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
+  @error_idp error_idp
+
   describe "idp/2" do
 
     test "returns an IdP struct if passed a valid URL, without options" do
@@ -86,15 +95,13 @@ defmodule ShinTest do
   describe "reload_service/2" do
 
     test "will reload an existing and known reloadable service, using the service ID" do
-      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
       assert {:ok, "Configuration reloaded for 'shibboleth.MetadataResolverService'"} =
-               Shin.reload_service(idp, "shibboleth.MetadataResolverService")
+               Shin.reload_service(@good_idp, "shibboleth.MetadataResolverService")
     end
 
     test "will reload and existing and known reloadable service, using an alias" do
-      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
       assert {:ok, "Configuration reloaded for 'shibboleth.MetadataResolverService'"} =
-               Shin.reload_service(idp, :metadata_resolver)
+               Shin.reload_service(@good_idp, :metadata_resolver)
     end
 
     test "will complain if passed an unknown service ID" do
@@ -113,18 +120,15 @@ defmodule ShinTest do
     end
 
     test "will complain if passed an unknown alias" do
-      {:ok, idp} = Shin.idp("https://example.com/idp")
-      assert {:error, _} = Shin.reload_service(idp, :whatever_resolver)
+      assert {:error, _} = Shin.reload_service(@good_idp, :whatever_resolver)
     end
 
     test "will produce a decent error if URL is not found" do
-      {:ok, idp} = Shin.idp("https://login-miss.localhost.demo.university/idp")
-      assert {:error, _} = Shin.reload_service(idp, :metadata_resolver)
+      assert {:error, _} = Shin.reload_service(@miss_idp, :metadata_resolver)
     end
 
     test "will produce a decent error if server has error" do
-      {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
-      assert {:error, _} = Shin.reload_service(idp, :metadata_resolver)
+      assert {:error, _} = Shin.reload_service(@error_idp, :metadata_resolver)
     end
 
     test "can be passed an IdP record (expected)" do
@@ -143,7 +147,6 @@ defmodule ShinTest do
   describe "metrics/1" do
 
     test "will return a map of raw metrics data if the service is available" do
-      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
       assert {
                :ok,
                %{
@@ -153,12 +156,11 @@ defmodule ShinTest do
                    }
                  }
                }
-             } = Shin.metrics(idp)
+             } = Shin.metrics(@good_idp)
     end
 
     test "will produce a decent error if service is unavailable" do
-      {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
-      assert {:error, "Error 500"} = Shin.metrics(idp)
+      assert {:error, "Error 500"} = Shin.metrics(@error_idp)
     end
 
     test "can be passed an IdP record (expected)" do
@@ -175,7 +177,6 @@ defmodule ShinTest do
   describe "metrics/2" do
 
     test "will return a map of a subset of raw metrics data if the service is available and the group is known" do
-      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
       assert {
                :ok,
                %{
@@ -183,17 +184,15 @@ defmodule ShinTest do
                    "cores.available" => _
                  }
                }
-             } = Shin.metrics(idp, :core)
+             } = Shin.metrics(@good_idp, :core)
     end
 
     test "will complain if passed an unknown group" do
-      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-      assert {:error, "IdP does not support metric group 'baboon'"} = Shin.metrics(idp, :baboon)
+      assert {:error, "IdP does not support metric group 'baboon'"} = Shin.metrics(@good_idp, :baboon)
     end
 
     test "will produce a decent error if service is unavailable" do
-      {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
-      assert {:error, "Error 500"} = Shin.metrics(idp, :core)
+      assert {:error, "Error 500"} = Shin.metrics(@error_idp, :core)
     end
 
     test "can be passed an IdP record (expected)" do
@@ -210,13 +209,11 @@ defmodule ShinTest do
   describe "report/1" do
 
     test "will return a default struct containing processed metrics (system info)" do
-      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp)
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(@good_idp)
     end
 
     test "will produce a decent error if service is unavailable" do
-      {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
-      assert {:error, "Error 500"} = Shin.report(idp)
+      assert {:error, "Error 500"} = Shin.report(@error_idp)
     end
 
     test "can be passed an IdP record (expected)" do
@@ -233,23 +230,19 @@ defmodule ShinTest do
   describe "report/2" do
 
     test "will return a struct containing processed metrics as specified by the report Module" do
-      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-      assert {:ok, %Shin.Reports.IdPInfo{uptime: _}} = Shin.report(idp, Shin.Reports.IdPInfo)
+      assert {:ok, %Shin.Reports.IdPInfo{uptime: _}} = Shin.report(@good_idp, Shin.Reports.IdPInfo)
     end
 
     test "will return a struct containing processed metrics as specified by the report alias" do
-      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp, :system_info)
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(@good_idp, :system_info)
     end
 
     test "will complain if passed an unknown alias" do
-      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-      assert {:error, _} = Shin.report(idp, :badgers)
+      assert {:error, _} = Shin.report(@good_idp, :badgers)
     end
 
     test "will produce a decent error if service is unavailable" do
-      {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
-      assert {:error, "Error 500"} = Shin.report(idp, :system_info)
+      assert {:error, "Error 500"} = Shin.report(@error_idp, :system_info)
     end
 
     test "can be passed an IdP record (expected)" do
