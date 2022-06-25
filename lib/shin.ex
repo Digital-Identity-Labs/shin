@@ -38,7 +38,7 @@ defmodule Shin do
   end
 
   def report(idp) do
-    report(idp, :idp_info)
+    report(idp, :system_info)
   end
 
   def report(idp, reporter) do
