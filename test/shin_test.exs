@@ -142,83 +142,105 @@ defmodule ShinTest do
 
   describe "metrics/1" do
 
-        test "will return a map of raw metrics data if the service is available" do
-          {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-          assert {:ok,
-            %{"gauges" => %{"net.shibboleth.idp.version" => %{"value" => "4.2.1"}}}} = Shin.metrics(idp)
-        end
+    test "will return a map of raw metrics data if the service is available" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {
+               :ok,
+               %{
+                 "gauges" => %{
+                   "net.shibboleth.idp.version" => %{
+                     "value" => "4.2.1"
+                   }
+                 }
+               }
+             } = Shin.metrics(idp)
+    end
 
-        test "will produce a decent error if service is unavailable" do
-          {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
-          assert {:error, "Error 500"} = Shin.metrics(idp)
-        end
+    test "will produce a decent error if service is unavailable" do
+      {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
+      assert {:error, "Error 500"} = Shin.metrics(idp)
+    end
 
-        test "can be passed an IdP record (expected)" do
-          {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-          assert {:ok, %{"gauges" => _things}} = Shin.metrics(idp)
-        end
+    test "can be passed an IdP record (expected)" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {:ok, %{"gauges" => _things}} = Shin.metrics(idp)
+    end
 
-        test "can be passed a base URL for the IdP" do
-          assert {:ok, %{"gauges" => _things}} = Shin.metrics("https://login.localhost.demo.university/idp")
-        end
+    test "can be passed a base URL for the IdP" do
+      assert {:ok, %{"gauges" => _things}} = Shin.metrics("https://login.localhost.demo.university/idp")
+    end
 
   end
 
   describe "metrics/2" do
 
-        test "will return a map of a subset of raw metrics data if the service is available and the group is known" do
-          {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-          assert {:ok, %{"gauges" => %{"cores.available" => _}}} = Shin.metrics(idp, :core)
-        end
+    test "will return a map of a subset of raw metrics data if the service is available and the group is known" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {
+               :ok,
+               %{
+                 "gauges" => %{
+                   "cores.available" => _
+                 }
+               }
+             } = Shin.metrics(idp, :core)
+    end
 
-        test "will complain if passed an unknown group" do
-          {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-          assert {:error, "IdP does not support metric group 'baboon'"}  = Shin.metrics(idp, :baboon)
-        end
+    test "will complain if passed an unknown group" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {:error, "IdP does not support metric group 'baboon'"} = Shin.metrics(idp, :baboon)
+    end
 
-        test "will produce a decent error if service is unavailable" do
-          {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
-          assert {:error, "Error 500"} = Shin.metrics(idp, :core)
-        end
+    test "will produce a decent error if service is unavailable" do
+      {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
+      assert {:error, "Error 500"} = Shin.metrics(idp, :core)
+    end
 
-        test "can be passed an IdP record (expected)" do
-          {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-          assert {:ok, %{"gauges" => _things}} = Shin.metrics(idp, :core)
-        end
+    test "can be passed an IdP record (expected)" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {:ok, %{"gauges" => _things}} = Shin.metrics(idp, :core)
+    end
 
-        test "can be passed a base URL for the IdP" do
-          assert {:ok, %{"gauges" => _things}} = Shin.metrics("https://login.localhost.demo.university/idp", :core)
-        end
+    test "can be passed a base URL for the IdP" do
+      assert {:ok, %{"gauges" => _things}} = Shin.metrics("https://login.localhost.demo.university/idp", :core)
+    end
 
   end
 
   describe "report/1" do
 
-    #    test "will return a struct containing processed metrics" do
-    #      assert false
-    #    end
-    #
-    #    test "will produce a decent error if service is unavailable" do
-    #      assert false
-    #    end
-    #
-    #    test "can be passed an IdP record (expected)" do
-    #      assert false
-    #    end
-    #
-    #    test "can be passed a base URL for the IdP" do
-    #      assert false
-    #    end
+    test "will return a default struct containing processed metrics (system info)" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp)
+    end
+
+    test "will produce a decent error if service is unavailable" do
+      {:ok, idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
+      assert {:error, "Error 500"} = Shin.report(idp)
+    end
+
+    test "can be passed an IdP record (expected)" do
+      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp)
+    end
+
+    test "can be passed a base URL for the IdP" do
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report("https://login.localhost.demo.university/idp")
+    end
 
   end
 
   describe "report/2" do
 
-    #    test "will return a struct containing processed metrics" do
+    #    test "will return a struct containing processed metrics as specified by the report Module" do
     #      assert false
     #    end
-    #
-    #    test "will complain if passed an unknown group" do
+
+    #    test "will return a struct containing processed metrics as specified by the report alias" do
+    #      assert false
+    #    end
+
+    #    test "will complain if passed an unknown alias" do
     #      assert false
     #    end
     #
