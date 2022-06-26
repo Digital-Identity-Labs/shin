@@ -1,6 +1,5 @@
 defmodule Shin.Metrics do
 
-
   def gauge_ids(%{"gauges" => gauges} = data) do
     Map.keys(gauges)
   end
@@ -60,6 +59,5 @@ defmodule Shin.Metrics do
        )
     |> Enum.into(%{})
   end
-
 
 end
