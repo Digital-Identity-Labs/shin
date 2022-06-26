@@ -38,6 +38,7 @@ defmodule Shin.IdP do
     reload_path: "profile/admin/reload-service",
     metric_groups: @default_metric_groups,
     reloadable_services: @default_reloadable_services,
+    no_dns_check: false,
     timeout: 2_000
   ]
 
@@ -110,7 +111,7 @@ defmodule Shin.IdP do
   end
 
   def metrics_path(idp) do
-    idp.metric_path
+    idp.metrics_path
   end
 
   def metrics_path(idp, group) do
