@@ -1,6 +1,5 @@
 defmodule ShinIdPTest do
   use ExUnit.Case
-  doctest Shin
 
   alias Shin.IdP
 

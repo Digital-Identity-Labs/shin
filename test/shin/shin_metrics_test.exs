@@ -1,6 +1,5 @@
 defmodule ShinMetricsTest do
   use ExUnit.Case
-  doctest Shin
 
   alias Shin.Metrics
 
