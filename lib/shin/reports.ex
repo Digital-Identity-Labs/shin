@@ -9,7 +9,7 @@ defmodule Shin.Reports do
     @report_mods
   end
 
-  def system(idp, metrics) do
+  def system(metrics) do
     produce(metrics, Shin.Reports.SystemInfo)
   end
 
