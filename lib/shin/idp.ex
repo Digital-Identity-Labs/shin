@@ -32,6 +32,16 @@ defmodule Shin.IdP do
 
   @enforce_keys [:base_url]
 
+  @type t :: %IdP{
+               base_url: binary(),
+               metrics_path: binary(),
+               reload_path: binary(),
+               metric_groups: list(),
+               reloadable_services: map(),
+               no_dns_check: boolean(),
+               timeout: integer()
+             }
+
   defstruct [
     :base_url,
     metrics_path: "profile/admin/metrics",
@@ -55,16 +65,28 @@ defmodule Shin.IdP do
     end
   end
 
+  def metric_groups(%IdP{metric_groups: values} = idp) when is_nil(values) do
+    []
+  end
+
   def metric_groups(idp) do
-    idp.metric_groups || []
+    idp.metric_groups
+  end
+
+  def service_ids(%IdP{reloadable_services: values} = idp) when is_nil(values) do
+    []
   end
 
   def service_ids(idp) do
-    Map.values(idp.reloadable_services) || []
+    Map.values(idp.reloadable_services)
+  end
+
+  def service_aliases(%IdP{reloadable_services: values} = idp) when is_nil(values) do
+    []
   end
 
   def service_aliases(idp) do
-    Map.keys(idp.reloadable_services) || []
+    Map.keys(idp.reloadable_services)
   end
 
   def is_reloadable?(idp, service) when is_atom(service) do
