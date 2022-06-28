@@ -2,6 +2,7 @@ defmodule Shin.HTTP do
 
   alias Shin.IdP
 
+  @spec get_json(idp :: IdP.t(), path :: binary) :: {:ok, map} | {:error, binary}
   def get_json(idp, path) do
     case Tesla.get(client(idp, :json), path) do
       {:ok, result} -> if result.status == 200 do
@@ -13,6 +14,7 @@ defmodule Shin.HTTP do
     end
   end
 
+  @spec get_reload(idp :: IdP.t(), service :: binary) :: {:ok, binary} | {:error, binary}
   def get_reload(idp, service) do
     case Tesla.get(client(idp, :text), idp.reload_path, query: [id: service]) do
       {:ok, result} -> if result.status == 200 do
@@ -24,6 +26,7 @@ defmodule Shin.HTTP do
     end
   end
 
+  @spec client(idp :: IdP.t(), type :: atom) :: Tesla.Client.t()
   defp client(%IdP{} = idp, type) when is_struct(idp) do
 
     middleware = essential_middleware(idp)
