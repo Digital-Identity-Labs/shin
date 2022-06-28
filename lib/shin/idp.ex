@@ -52,11 +52,17 @@ defmodule Shin.IdP do
     timeout: 2_000
   ]
 
+  @spec configure(idp :: binary | IdP.t())  :: {:ok, IdP.t()} | {:error, binary}
   def configure(idp) when is_struct(idp) do
     {:ok, idp}
   end
 
-  def configure(base_url, options \\ []) when is_binary(base_url) do
+  def configure(idp) when is_binary(idp) do
+    configure(idp, [])
+  end
+
+  @spec configure(idp :: binary, options :: list)  :: {:ok,  IdP.t()} | {:error, binary}
+  def configure(base_url, options \\ []) when is_binary(base_url) and is_list(options) do
     with {:ok, url} <- validate_url(base_url, options),
          {:ok, opts} <- validate_opts(options) do
       {:ok, struct(IdP, merge(url, opts))}
@@ -65,6 +71,7 @@ defmodule Shin.IdP do
     end
   end
 
+  @spec metric_groups(idp :: IdP.t())  :: list()
   def metric_groups(%IdP{metric_groups: values} = idp) when is_nil(values) do
     []
   end
@@ -73,6 +80,7 @@ defmodule Shin.IdP do
     idp.metric_groups
   end
 
+  @spec service_ids(idp :: IdP.t())  :: list()
   def service_ids(%IdP{reloadable_services: values} = idp) when is_nil(values) do
     []
   end
@@ -81,6 +89,7 @@ defmodule Shin.IdP do
     Map.values(idp.reloadable_services)
   end
 
+  @spec service_aliases(idp :: IdP.t())  :: list()
   def service_aliases(%IdP{reloadable_services: values} = idp) when is_nil(values) do
     []
   end
@@ -89,6 +98,7 @@ defmodule Shin.IdP do
     Map.keys(idp.reloadable_services)
   end
 
+  @spec is_reloadable?(idp :: IdP.t(), service :: atom() | binary())  :: boolean()
   def is_reloadable?(idp, service) when is_atom(service) do
     Map.has_key?(idp.reloadable_services, service)
   end
@@ -98,6 +108,7 @@ defmodule Shin.IdP do
     |> Enum.member?(service)
   end
 
+  @spec validate_service(idp :: IdP.t(), service :: atom() | binary())  :: {:ok, binary()}
   def validate_service(idp, service) when is_atom(service) do
     service_id = Map.get(idp.reloadable_services, service)
     if service_id do
@@ -115,6 +126,7 @@ defmodule Shin.IdP do
     end
   end
 
+  @spec validate_metric_group(idp :: IdP.t(), service :: atom() | binary())  :: {:ok, atom()}
   def validate_metric_group(idp, group) when is_binary(group) do
     try do
       group = String.to_existing_atom(group)
@@ -132,14 +144,17 @@ defmodule Shin.IdP do
     end
   end
 
+  @spec metrics_path(idp :: IdP.t())  :: binary()
   def metrics_path(idp) do
     idp.metrics_path
   end
 
+  @spec metrics_path(idp :: IdP.t(), group :: atom() | binary())  :: binary()
   def metrics_path(idp, group) do
     "#{idp.metrics_path}/#{group}"
   end
 
+  @spec validate_url(url :: binary, options :: list() ) :: {:ok, binary} | {:error, binary}
   defp validate_url(url, options) do
     parsed_url = URI.parse(url)
     case parsed_url do
@@ -161,10 +176,12 @@ defmodule Shin.IdP do
     end
   end
 
+  @spec validate_opts(opts :: list() ) :: {:ok, list} | {:error, binary}
   defp validate_opts(opts) do
     {:ok, opts}
   end
 
+  @spec merge(url :: binary, opts :: list()  ) :: map()
   defp merge(url, opts) do
     opt_map = Enum.into(opts, %{base_url: nil})
     %{opt_map | base_url: url}
