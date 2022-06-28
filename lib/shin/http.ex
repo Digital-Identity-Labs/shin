@@ -30,7 +30,6 @@ defmodule Shin.HTTP do
     middleware = case type do
       :json -> [Tesla.Middleware.JSON | middleware]
       :text -> middleware
-      _ -> middleware
     end
 
     Tesla.client(middleware)
@@ -48,10 +47,6 @@ defmodule Shin.HTTP do
       {Tesla.Middleware.Timeout, timeout: idp.timeout}
 
     ]
-  end
-
-  defp json_middleware(idp) do
-    [Tesla.Middleware.JSON]
   end
 
 end
