@@ -5,18 +5,32 @@ defmodule Shin.Reports do
     idp_info: Shin.Reports.IdPInfo
   }
 
+  @spec reporters() :: map()
   def reporters do
     @report_mods
   end
 
+  @spec reporter_aliases() :: list()
+  def reporter_aliases do
+    Map.keys(@report_mods)
+  end
+
+  @spec reporter_modules() :: list()
+  def reporter_modules do
+    Map.values(@report_mods)
+  end
+
+  @spec system(data :: map()) :: {:ok, struct()} | {:error, binary}
   def system(metrics) do
     produce(metrics, Shin.Reports.SystemInfo)
   end
 
+  @spec idp(data :: map()) :: {:ok, struct()} | {:error, binary}
   def idp(metrics) do
     produce(metrics, Shin.Reports.IdPInfo)
   end
 
+  @spec produce(data :: map(), reporter :: binary() | atom()) :: {:ok, struct()} | {:error, binary}
   def produce(metrics, reporter) do
     with {:ok, reporter} <- normalise_reporter(reporter),
          {:ok, metrics} <- check_metrics(metrics, reporter) do
@@ -26,6 +40,7 @@ defmodule Shin.Reports do
     end
   end
 
+  @spec normalise_reporter(reporter :: atom()) :: {:ok, atom()} | {:error, binary()}
   defp normalise_reporter(reporter) when is_atom(reporter) do
     report_module = Map.get(@report_mods, reporter, nil)
     if report_module do
@@ -39,6 +54,7 @@ defmodule Shin.Reports do
     end
   end
 
+  @spec check_metrics(data :: map(), reporter :: atom()) :: {:ok, map()} | {:error, binary}
   defp check_metrics(metrics, reporter) do
     {:ok, metrics}
   end
