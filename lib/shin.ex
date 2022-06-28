@@ -1,15 +1,16 @@
 defmodule Shin do
 
-
   alias Shin.IdP
   alias Shin.HTTP
   alias Shin.Metrics
   alias Shin.Reports
 
+  @spec idp(idp :: binary | IdP.t(), opts :: keyword)  :: {:ok, IdP.t()} | {:error, binary}
   def idp(idp, opts \\ []) do
     IdP.configure(idp, opts)
   end
 
+  @spec reload_service(idp :: binary | IdP.t(), service :: atom | binary)  :: {:ok, binary} | {:error, binary}
   def reload_service(idp, service) do
     with {:ok, idp} <- prep_idp(idp),
          {:ok, service} <- IdP.validate_service(idp, service) do
@@ -19,6 +20,7 @@ defmodule Shin do
     end
   end
 
+  @spec metrics(idp :: binary | IdP.t()) :: {:ok,map()} | {:error, binary}
   def metrics(idp) do
     with {:ok, idp} <- prep_idp(idp) do
       HTTP.get_json(idp, idp.metrics_path)
@@ -27,6 +29,7 @@ defmodule Shin do
     end
   end
 
+  @spec metrics(idp :: binary | IdP.t(), group :: atom | string) :: {:ok,map()} | {:error, binary}
   def metrics(idp, group) do
     with {:ok, idp} <- prep_idp(idp),
          {:ok, group} <- IdP.validate_metric_group(idp, group),
@@ -37,10 +40,12 @@ defmodule Shin do
     end
   end
 
+  @spec report(idp :: binary | IdP.t()) :: {:ok, struct()} | {:error, binary}
   def report(idp) do
     report(idp, :system_info)
   end
 
+  @spec report(idp :: binary | IdP.t(), reporter :: atom()) :: {:ok, struct()} | {:error, binary}
   def report(idp, reporter) do
     with {:ok, idp} <- prep_idp(idp),
          {:ok, metrics} <- metrics(idp) do
@@ -50,6 +55,7 @@ defmodule Shin do
     end
   end
 
+  @spec prep_idp(idp :: binary | IdP.t()) :: {:ok, struct()} | {:error, binary}
   defp prep_idp(idp) when is_binary(idp) do
     IdP.configure(idp)
   end
