@@ -29,7 +29,7 @@ defmodule Shin do
     end
   end
 
-  @spec metrics(idp :: binary | IdP.t(), group :: atom | string) :: {:ok,map()} | {:error, binary}
+  @spec metrics(idp :: binary | IdP.t(), group :: atom | binary) :: {:ok,map()} | {:error, binary}
   def metrics(idp, group) do
     with {:ok, idp} <- prep_idp(idp),
          {:ok, group} <- IdP.validate_metric_group(idp, group),
