@@ -1,5 +1,7 @@
 defmodule Shin.HTTP do
 
+  @moduledoc false
+
   alias Shin.IdP
 
   @spec get_json(idp :: IdP.t(), path :: binary) :: {:ok, map} | {:error, binary}
