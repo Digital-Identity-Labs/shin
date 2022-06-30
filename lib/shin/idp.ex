@@ -27,7 +27,8 @@ defmodule Shin.IdP do
     nameid_generator: "shibboleth.NameIdentifierGenerationService",
     access_control: "shibboleth.ReloadableAccessControlService",
     cas_registry: "shibboleth.ReloadableCASServiceRegistry",
-    managed_beans: "shibboleth.ManagedBeanService"
+    managed_beans: "shibboleth.ManagedBeanService",
+    logging: "shibboleth.LoggingService"
   }
 
   @enforce_keys [:base_url]
