@@ -12,8 +12,8 @@ defmodule Shin do
 
   ## Overview
 
-  The `Shin` module contains a few useful functions that are probably enough for most tasks. The Shin.Metrics and
-  Shin.Reports modules provide extra functions for handling the returned metrics.
+  The `Shin` module contains a few useful functions that are probably enough for most tasks. The `Shin.Metrics` and
+  `Shin.Reports` modules provide extra functions for handling the returned metrics.
 
   ### Defining an IdP target
 
