@@ -53,7 +53,22 @@ defmodule Shin.IdP do
     timeout: 2_000
   ]
 
-  @spec configure(idp :: binary | IdP.t())  :: {:ok, IdP.t()} | {:error, binary}
+  @doc """
+  Returns a structure representing an IdP and its configuration.
+
+  Pass a URL as the only parameter (although it will pass-through existing IdP stucts too)
+
+  The URL is the base URL *of the IdP service*, not its entity ID. Normally this will include the "/idp" path.
+
+  ## Examples
+
+  ```
+  {:ok, idp} = Shin.IdP.configure("https://example.com/idp")
+  {:ok, idp} = Shin.IdP.configure(idp) # pass-through an existing IdP struct
+  ```
+
+  """
+  @spec configure(idp :: binary | IdP.t()) :: {:ok, IdP.t()} | {:error, binary}
   def configure(idp) when is_struct(idp) do
     {:ok, idp}
   end
@@ -62,7 +77,24 @@ defmodule Shin.IdP do
     configure(idp, [])
   end
 
-  @spec configure(idp :: binary, options :: list)  :: {:ok,  IdP.t()} | {:error, binary}
+  @doc """
+  Returns a structure representing an IdP and its configuration.
+
+  Pass a URL as the first (and required) parameter. URL validation can be skipped by specifying ```no_dns_check: true``` as an
+  option. Other options will replace defaults for the IdP's configuration.
+
+  The URL is the base URL *of the IdP service*, not its entity ID. Normally this will include the "/idp" path.
+
+  ## Examples
+
+  ```
+  {:ok, idp} = Shin.IdP.configure("https://example.com/idp")
+  {:ok, idp} = Shin.IdP.configure("https://hostnamedoesnotexist.com/idp", no_dns_check: true)
+  {:ok, idp} = Shin.IdP.configure("https://example.com/idp", metric_groups: [:core, :idp, :logging, :metadata, :errors])
+  ```
+
+  """
+  @spec configure(idp :: binary, options :: list) :: {:ok, IdP.t()} | {:error, binary}
   def configure(base_url, options \\ []) when is_binary(base_url) and is_list(options) do
     with {:ok, url} <- validate_url(base_url, options),
          {:ok, opts} <- validate_opts(options) do
@@ -72,7 +104,18 @@ defmodule Shin.IdP do
     end
   end
 
-  @spec metric_groups(idp :: IdP.t())  :: list()
+  @doc """
+  Return a list of metric groups for the IdP, as atoms.
+
+  ## Examples
+
+  ```
+  Shin.IdP.metric_groups(idp)
+  # => [:core, :idp, :logging, :access, :metadata, :nameid, :relyingparty, :registry, :resolver, :filter, :cas, :bean]
+  ```
+
+  """
+  @spec metric_groups(idp :: IdP.t()) :: list()
   def metric_groups(%IdP{metric_groups: values} = idp) when is_nil(values) do
     []
   end
@@ -81,7 +124,18 @@ defmodule Shin.IdP do
     idp.metric_groups
   end
 
-  @spec service_ids(idp :: IdP.t())  :: list()
+  @doc """
+  Return a list of service IDs, as used by the Shibboleth IdP software.
+
+  ## Examples
+
+  ```
+  Shin.IdP.service_ids(idp)
+  # => ["shibboleth.RelyingPartyResolverService", "shibboleth.MetadataResolverService", "shibboleth.LoggingService" ...]
+  ```
+
+  """
+  @spec service_ids(idp :: IdP.t()) :: list()
   def service_ids(%IdP{reloadable_services: values} = idp) when is_nil(values) do
     []
   end
@@ -90,7 +144,20 @@ defmodule Shin.IdP do
     Map.values(idp.reloadable_services)
   end
 
-  @spec service_aliases(idp :: IdP.t())  :: list()
+  @doc """
+  Return a list of service aliases as atoms.
+
+  These can be passed instead of the full Shibboleth service ID.
+
+  ## Examples
+
+  ```
+  Shin.IdP.service_aliases(idp)
+  # => [:relying_party_resolver, :metadata_resolver, :attribute_registry, :attribute_resolver, :attribute_filter ...]
+  ```
+
+  """
+  @spec service_aliases(idp :: IdP.t()) :: list()
   def service_aliases(%IdP{reloadable_services: values} = idp) when is_nil(values) do
     []
   end
@@ -99,7 +166,20 @@ defmodule Shin.IdP do
     Map.keys(idp.reloadable_services)
   end
 
-  @spec is_reloadable?(idp :: IdP.t(), service :: atom() | binary())  :: boolean()
+  @doc """
+  Checks if a service ID or service alias is present in the IdP configuration.
+
+  Returns true or false
+
+  ## Examples
+
+    ```
+    Shin.IdP.is_reloadable?(idp, :attribute_registry)
+    # => true
+    ```
+
+  """
+  @spec is_reloadable?(idp :: IdP.t(), service :: atom() | binary()) :: boolean()
   def is_reloadable?(idp, service) when is_atom(service) do
     Map.has_key?(idp.reloadable_services, service)
   end
@@ -109,7 +189,20 @@ defmodule Shin.IdP do
     |> Enum.member?(service)
   end
 
-  @spec validate_service(idp :: IdP.t(), service :: atom() | binary())  :: {:ok, binary()}
+  @doc """
+  Checks if a service ID or service alias is present in the IdP configuration and returns a normalised version.
+
+  Returns the full Shibboleth IdP service ID if passed an alias atom.
+
+  ## Examples
+
+    ```
+    Shin.IdP.validate_service(idp, :attribute_registry)
+    # => "shibboleth.AttributeRegistryService"
+    ```
+
+  """
+  @spec validate_service(idp :: IdP.t(), service :: atom() | binary()) :: {:ok, binary()}
   def validate_service(idp, service) when is_atom(service) do
     service_id = Map.get(idp.reloadable_services, service)
     if service_id do
@@ -127,7 +220,20 @@ defmodule Shin.IdP do
     end
   end
 
-  @spec validate_metric_group(idp :: IdP.t(), service :: atom() | binary())  :: {:ok, atom()}
+  @doc """
+  Checks if a metric group is present in the IdP configuration and returns a normalised version.
+
+  Returns an atom.
+
+  ## Examples
+
+    ```
+    Shin.IdP.validate_metric_group(idp, "core")
+    # => :core
+    ```
+
+  """
+  @spec validate_metric_group(idp :: IdP.t(), service :: atom() | binary()) :: {:ok, atom()}
   def validate_metric_group(idp, group) when is_binary(group) do
     try do
       group = String.to_existing_atom(group)
@@ -145,17 +251,39 @@ defmodule Shin.IdP do
     end
   end
 
-  @spec metrics_path(idp :: IdP.t())  :: binary()
+  @doc """
+  Returns the base metrics path (for all metrics) for an IdP
+
+  ## Examples
+
+    ```
+    Shin.IdP.metrics_path(idp)
+    # =>  metrics_path: "https://example.com/idp/profile/admin/metrics",
+    ```
+
+  """
+  @spec metrics_path(idp :: IdP.t()) :: binary()
   def metrics_path(idp) do
     idp.metrics_path
   end
 
-  @spec metrics_path(idp :: IdP.t(), group :: atom() | binary())  :: binary()
+  @doc """
+  Returns the base metrics path for the specified group at an IdP
+
+  ## Examples
+
+    ```
+    Shin.IdP.metrics_path(idp, :core)
+    # =>  metrics_path: "https://example.com/idp/profile/admin/metrics/core",
+    ```
+
+  """
+  @spec metrics_path(idp :: IdP.t(), group :: atom() | binary()) :: binary()
   def metrics_path(idp, group) do
     "#{idp.metrics_path}/#{group}"
   end
 
-  @spec validate_url(url :: binary, options :: list() ) :: {:ok, binary} | {:error, binary}
+  @spec validate_url(url :: binary, options :: list()) :: {:ok, binary} | {:error, binary}
   defp validate_url(url, options) do
     parsed_url = URI.parse(url)
     case parsed_url do
@@ -177,12 +305,12 @@ defmodule Shin.IdP do
     end
   end
 
-  @spec validate_opts(opts :: list() ) :: {:ok, list} | {:error, binary}
+  @spec validate_opts(opts :: list()) :: {:ok, list} | {:error, binary}
   defp validate_opts(opts) do
     {:ok, opts}
   end
 
-  @spec merge(url :: binary, opts :: list()  ) :: map()
+  @spec merge(url :: binary, opts :: list()) :: map()
   defp merge(url, opts) do
     opt_map = Enum.into(opts, %{base_url: nil})
     %{opt_map | base_url: url}
