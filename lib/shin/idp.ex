@@ -1,7 +1,7 @@
 defmodule Shin.IdP do
   @moduledoc """
     This module contains the IdP structure used to configure requests to a particular IdP. The defaults should work
-    work for a typical fresh installation of Shibboleth IdP v4, but may require customisation if the IdP has a different
+    for a typical fresh installation of Shibboleth IdP v4, but may require customisation if the IdP has a different
     path for endpoints, or additional metrics groups, etc.
   """
 

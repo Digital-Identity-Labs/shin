@@ -4,21 +4,20 @@ defmodule Shin.Reports do
     This module contains functions for converting the metrics data returned from a Shibboleth IdP into
     simplified maps of data.
   """
-  
+
   @report_mods %{
     system_info: Shin.Reports.SystemInfo,
     idp_info: Shin.Reports.IdPInfo
   }
 
   @doc """
-  x
-
-  y
+  Returns a map of reporter aliases and modules.
 
   ## Examples
 
     ```
-    z
+    Shin.Reports.reporters
+    # => %{system_info: Shin.Reports.SystemInfo, idp_info: Shin.Reports.IdPInfo}
     ```
 
   """
@@ -28,14 +27,13 @@ defmodule Shin.Reports do
   end
 
   @doc """
-  x
-
-  y
+  Returns a list reporter aliases
 
   ## Examples
 
     ```
-    z
+    Shin.Reports.reporter_aliases
+    # => [:system_info, :idp_info]
     ```
 
   """
@@ -45,14 +43,13 @@ defmodule Shin.Reports do
   end
 
   @doc """
-  x
-
-  y
+  Returns a map of reporter modules.
 
   ## Examples
 
     ```
-    z
+    Shin.Reports.reporter_modules
+    # => [Shin.Reports.SystemInfo, Shin.Reports.IdPInfo]
     ```
 
   """
@@ -62,52 +59,54 @@ defmodule Shin.Reports do
   end
 
   @doc """
-  x
-
-  y
+  A convenience function to produce a SystemInfo report (reformated "core" metrics)
 
   ## Examples
 
     ```
-    z
+    Shin.Reports.system(metrics)
+    # => {:ok, %Reports.SystemInfo{cores: 4,  ...}}
     ```
 
   """
-  @spec system(data :: map()) :: {:ok, struct()} | {:error, binary}
+  @spec system(metrics :: map()) :: {:ok, struct()} | {:error, binary}
   def system(metrics) do
     produce(metrics, Shin.Reports.SystemInfo)
   end
 
   @doc """
-  x
-
-  y
+  A convenience function to produce a IdPInfo report (reformated "idp" metrics)
 
   ## Examples
 
     ```
-    z
+    Shin.Reports.idp(metrics)
+    # => {:ok, %Reports.IdPInfo{ ... }}
     ```
 
   """
-  @spec idp(data :: map()) :: {:ok, struct()} | {:error, binary}
+  @spec idp(metrics :: map()) :: {:ok, struct()} | {:error, binary}
   def idp(metrics) do
     produce(metrics, Shin.Reports.IdPInfo)
   end
 
   @doc """
-  x
+  Produce the specified report using the provided metrics
 
-  y
+  The reporter can be an alias (an atom already know to Shin) or any suitable module.
 
   ## Examples
 
     ```
-    z
+    Reports.produce(metrics, :system_info)
+    # => {:ok, %Shin.Reports.SystemInfo{ ... }}
+
+    Reports.produce(metrics, Shin.Reports.IdPInfo)
+    # => {:ok, %Reports.IdPInfo{ ... }}
     ```
 
   """
-  @spec produce(data :: map(), reporter :: binary() | atom()) :: {:ok, struct()} | {:error, binary}
+  @spec produce(metrics :: map(), reporter :: binary() | atom()) :: {:ok, struct()} | {:error, binary}
   def produce(metrics, reporter) do
     with {:ok, reporter} <- normalise_reporter(reporter),
          {:ok, metrics} <- check_metrics(metrics, reporter) do
@@ -131,7 +130,7 @@ defmodule Shin.Reports do
     end
   end
 
-  @spec check_metrics(data :: map(), reporter :: atom()) :: {:ok, map()} | {:error, binary}
+  @spec check_metrics(metrics :: map(), reporter :: atom()) :: {:ok, map()} | {:error, binary}
   defp check_metrics(metrics, reporter) do
     {:ok, metrics}
   end
