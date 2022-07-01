@@ -19,7 +19,7 @@ defmodule Shin do
 
   To define an IdP using a default configuration you only need the base URL of the IdP service
 
-      iex> {:ok, idp} = Shin.idp("https://example.com/idp")
+      iex> Shin.idp("https://example.com/idp")
       {:ok, %Shin.IdP{
         base_url: "https://example.com/idp",
         metric_groups: [:core, :idp, :logging, :access, :metadata, :nameid,
@@ -74,7 +74,6 @@ defmodule Shin do
 
   alias Shin.IdP
   alias Shin.HTTP
-  alias Shin.Metrics
   alias Shin.Reports
 
   @doc """

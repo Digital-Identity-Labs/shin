@@ -1,9 +1,7 @@
 defmodule ShinReportsTest do
   use ExUnit.Case
-  doctest Shin
 
   alias Shin.Reports
-  alias Shin.Metrics
 
   @big_metrics MetricsExamples.complete()
 

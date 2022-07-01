@@ -27,8 +27,12 @@ defmodule ShinIdPTest do
     nameid_generator: "shibboleth.NameIdentifierGenerationService",
     access_control: "shibboleth.ReloadableAccessControlService",
     cas_registry: "shibboleth.ReloadableCASServiceRegistry",
-    managed_beans: "shibboleth.ManagedBeanService"
+    managed_beans: "shibboleth.ManagedBeanService",
+    logging: "shibboleth.LoggingService"
   }
+
+  @service_aliases Map.keys(@default_reloadable_services)
+  @service_ids Map.values(@default_reloadable_services)
 
   describe "configure/1" do
 
@@ -141,8 +145,7 @@ defmodule ShinIdPTest do
 
     test "by default returns the default service_ids of a Shibboleth IdP" do
       {:ok, idp} = IdP.configure("https://indiid.net/idp")
-      defaults = Map.values(@default_reloadable_services)
-      assert defaults = IdP.service_ids(idp)
+      assert @service_ids = IdP.service_ids(idp)
     end
 
     test "return a customised list of Service IDs if one has been configured for the IdP" do
@@ -161,8 +164,7 @@ defmodule ShinIdPTest do
 
     test "by default returns the default service_aliases of a Shibboleth IdP" do
       {:ok, idp} = IdP.configure("https://indiid.net/idp")
-      defaults = Map.keys(@default_reloadable_services)
-      assert defaults = IdP.service_aliases(idp)
+      assert  @service_aliases = IdP.service_aliases(idp)
     end
 
     test "return a customised list of service aliases if one has been configured for the IdP" do

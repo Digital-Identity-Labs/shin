@@ -2,7 +2,6 @@ defmodule ShinHTTPTest do
   use ExUnit.Case, async: false
 
   alias Shin.HTTP
-  alias Shin.IdP
 
   setup_all do
     Tesla.Mock.mock_global(
@@ -52,7 +51,7 @@ defmodule ShinHTTPTest do
 
     test "must be passed an IdP record (expected)" do
       {:ok, idp} = Shin.idp("https://login.localhost.demo.university/example")
-      assert {:ok, metrics} = HTTP.get_json(idp, "some/json")
+      assert {:ok, _metrics} = HTTP.get_json(idp, "some/json")
     end
 
     test "will raise an error if passed a URL or anything other than an IdP struct" do
@@ -82,7 +81,7 @@ defmodule ShinHTTPTest do
 
     test "must be passed an IdP record (expected)" do
       {:ok, idp} = Shin.idp("https://login.localhost.demo.university/example")
-      assert {:ok, metrics} = HTTP.get_reload(idp, "some/text")
+      assert {:ok, _message} = HTTP.get_reload(idp, "some/text")
     end
 
     test "will raise an error if passed a URL or anything other than an IdP struct" do
