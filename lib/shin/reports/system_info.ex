@@ -1,5 +1,7 @@
 defmodule Shin.Reports.SystemInfo do
 
+  @moduledoc false
+
   alias __MODULE__
   alias Shin.Metrics
 
