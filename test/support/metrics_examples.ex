@@ -1,5 +1,7 @@
 defmodule MetricsExamples do
 
+  @moduledoc false
+
   def generic do
     {:ok, file} = File.read("test/support/star_destroyer.json")
     Jason.decode!(file)
