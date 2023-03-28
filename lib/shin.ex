@@ -1,5 +1,4 @@
 defmodule Shin do
-
   @moduledoc """
   `Shin` is a simple Elixir client for the [Shibboleth IdP's](https://www.shibboleth.net/products/) admin features.
   Currently it can collect metrics and trigger service reloads.
@@ -114,7 +113,8 @@ defmodule Shin do
     {:ok, message} = Shin.reload_service("https://example.com/idp", :metadata_resolver)
     ```
   """
-  @spec reload_service(idp :: binary | IdP.t(), service :: atom | binary) :: {:ok, binary} | {:error, binary}
+  @spec reload_service(idp :: binary | IdP.t(), service :: atom | binary) ::
+          {:ok, binary} | {:error, binary}
   def reload_service(idp, service) do
     with {:ok, idp} <- prep_idp(idp),
          {:ok, service} <- IdP.validate_service(idp, service) do
@@ -157,7 +157,8 @@ defmodule Shin do
     ```
 
   """
-  @spec metrics(idp :: binary | IdP.t(), group :: atom | binary) :: {:ok, map()} | {:error, binary}
+  @spec metrics(idp :: binary | IdP.t(), group :: atom | binary) ::
+          {:ok, map()} | {:error, binary}
   def metrics(idp, group) do
     with {:ok, idp} <- prep_idp(idp),
          {:ok, group} <- IdP.validate_metric_group(idp, group),
@@ -208,6 +209,16 @@ defmodule Shin do
     end
   end
 
+  ####
+
+  def attributes(idp, sp, username, options \\ []) do
+
+
+
+  end
+
+  ####################################################################################################
+
   @spec prep_idp(idp :: binary | IdP.t()) :: {:ok, struct()} | {:error, binary}
   defp prep_idp(idp) when is_binary(idp) do
     IdP.configure(idp)
@@ -216,5 +227,4 @@ defmodule Shin do
   defp prep_idp(%IdP{base_url: _} = idp) do
     {:ok, idp}
   end
-
 end
