@@ -21,6 +21,15 @@ defmodule Shin.Utils do
     query = if is_nil(options[:acs_index]), do: query, else: Keyword.merge(query, [acsIndex: options[:acs_index]])
   end
 
+  def build_mdq_query(idp, entity_id, options) do
+    query = [entityID: entity_id]
+    query = if is_nil(options[:protocol]), do: query, else: Keyword.merge(query, [protocol: options[:protocol]])
+  end
+
+  def build_mdr_query(idp, mdp_id, options) do
+    query = [id: mdp_id]
+  end
+
   ####################################################################################################
 
 
