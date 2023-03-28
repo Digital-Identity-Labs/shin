@@ -42,6 +42,11 @@ defmodule Shin.IdP do
                base_url: binary(),
                metrics_path: binary(),
                reload_path: binary(),
+               attributes_path: binary(),
+               md_query_path: binary(),
+               md_reload_path: binary(),
+               lockout_path: binary(),
+               lockout_bean: binary(),
                metric_groups: list(),
                reloadable_services: map(),
                no_dns_check: boolean(),
@@ -52,6 +57,11 @@ defmodule Shin.IdP do
     :base_url,
     metrics_path: "profile/admin/metrics",
     reload_path: "profile/admin/reload-service",
+    attributes_path: "profile/admin/resolvertest",
+    md_query_path: "profile/admin/mdquery",
+    md_reload_path: "profile/admin/reload-metadata",
+    lockout_path: "profile/admin/lockout",
+    lockout_bean: "shibboleth.StorageBackedAccountLockoutManager",
     metric_groups: @default_metric_groups,
     reloadable_services: @default_reloadable_services,
     no_dns_check: false,
@@ -99,7 +109,7 @@ defmodule Shin.IdP do
   ```
 
   """
-  @spec configure(idp :: binary, options :: list) :: {:ok, IdP.t()} | {:error, binary}
+  @spec configure(idp :: binary, options :: keyword()) :: {:ok, IdP.t()} | {:error, binary}
   def configure(base_url, options \\ []) when is_binary(base_url) and is_list(options) do
     with {:ok, url} <- validate_url(base_url, options),
          {:ok, opts} <- validate_opts(options) do
