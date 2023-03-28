@@ -46,7 +46,7 @@ defmodule ShinIdPTest do
       assert {:error, _} = IdP.configure("example.com/idp")
     end
 
-    test "will not accept a URL with unfindable hostname" do
+    test "will not accept a URL with an unfindable hostname" do
       assert {:error, _} = IdP.configure("https://dancing.dancing.newt")
     end
 
@@ -269,5 +269,3 @@ defmodule ShinIdPTest do
   end
 
 end
-
-
