@@ -30,6 +30,12 @@ defmodule Shin.Utils do
     query = [id: mdp_id]
   end
 
+  # shibboleth.authn.Password.AccountLockoutManager/jdoe%21192.168.1.1
+  def build_lockout_path(idp, username, ip_address, options) do
+    [idp.lockout_path, idp.lockout_bean, "#{username}!#{ip_address}"] |> Enum.join("/")
+  end
+
+
   ####################################################################################################
 
 

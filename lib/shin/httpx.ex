@@ -11,7 +11,7 @@ defmodule Shin.HTTPX do
     results = Req.get(client(idp, options), url: path, params: params)
 
     case results do
-      {:ok, result} -> if result.status == 200 do
+      {:ok, result} -> if Enum.member?(200..299, result.status) do
                          {:ok, tidy_data(result.body)}
                        else
                          {:error, "Error #{result.status}"}
@@ -21,6 +21,35 @@ defmodule Shin.HTTPX do
 
   end
 
+  def post_data(idp, path, params \\ [], options \\ []) do
+
+    results = Req.post(client(idp, options), url: path, params: params)
+
+    case results do
+      {:ok, result} -> if Enum.member?(200..299, result.status) do
+                         {:ok, tidy_data(result.body)}
+                       else
+                         {:error, "Error #{result.status}"}
+                       end
+      {:error, msg} -> {:error, msg}
+    end
+
+  end
+
+  def del_data(idp, path, params \\ [], options \\ []) do
+
+    results = Req.delete(client(idp, options), url: path, params: params)
+
+    case results do
+      {:ok, result} -> if Enum.member?(200..299, result.status) do
+                         {:ok, tidy_data(result.body)}
+                       else
+                         {:error, "Error #{result.status}"}
+                       end
+      {:error, msg} -> {:error, msg}
+    end
+
+  end
   ####################################################################################################
 
   defp client(idp, options \\ [])
