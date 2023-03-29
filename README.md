@@ -9,6 +9,8 @@ other information defined as a metric within the IdP. Shin can return the raw da
 The Shibboleth IdP will automatically reload valid configuration files but may stop retrying if passed an incorrect file. 
 Shin can be used to prompt the IdP to immediately reload parts of its configuration.
 
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2FDigital-Identity-Labs%2Fshin%2Fmain%2Fshin_notebook.livemd)
+
 
 ## Installation
 
@@ -159,4 +161,3 @@ or submit a [pull request](https://github.com/Digital-Identity-Labs/shin/pulls) 
 Copyright (c) 2022 Digital Identity Ltd, UK
 
 Shin is MIT licensed.
-

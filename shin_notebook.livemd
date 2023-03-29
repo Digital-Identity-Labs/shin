@@ -1,0 +1,24 @@
+<!-- livebook:{"app_settings":{"slug":"shin"}} -->
+
+# Smee Workbook
+
+```elixir
+Mix.install([{:smee, ">= 0.2.0"}, {:rambo, "~> 0.3.4"}])
+alias Shin.{Metadata, Attributes}
+```
+
+## 1. Defining an IdP
+
+You'll need to change the URL to the base URL of your own IdP service. You'll need access
+to the admin endpoints (by default this is done with an IP address allow-list)
+
+```elixir
+idp = Shin.idp("https://idp.university.ac.uk/idp")
+```
+
+## Getting raw metrics information
+
+```elixir
+metrics = Shin.metrics(idp)
+```
+
