@@ -1,9 +1,9 @@
 <!-- livebook:{"app_settings":{"slug":"shin"}} -->
 
-# Smee Workbook
+# Shin Workbook
 
 ```elixir
-Mix.install([{:smee, ">= 0.2.0"}, {:rambo, "~> 0.3.4"}])
+Mix.install([{:shin, ">= 0.1.0"}])
 alias Shin.{Metadata, Attributes}
 ```
 
@@ -13,12 +13,11 @@ You'll need to change the URL to the base URL of your own IdP service. You'll ne
 to the admin endpoints (by default this is done with an IP address allow-list)
 
 ```elixir
-idp = Shin.idp("https://idp.university.ac.uk/idp")
+{:ok, idp} = Shin.idp("https://idp.university.ac.uk/idp")
 ```
 
-## Getting raw metrics information
+## 2. Getting raw metrics information
 
 ```elixir
 metrics = Shin.metrics(idp)
 ```
-
