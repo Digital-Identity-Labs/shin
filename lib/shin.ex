@@ -72,7 +72,12 @@ defmodule Shin do
   """
 
   alias Shin.IdP
-  alias Shin.HTTP
+  alias Shin.Metrics
+  alias Shin.Service
+  alias Shin.Assertion
+  alias Shin.Attributes
+  alias Shin.Metadata
+  alias Shin.Lockout
   alias Shin.Reports
 
   @doc """
@@ -115,10 +120,10 @@ defmodule Shin do
   """
   @spec reload_service(idp :: binary | IdP.t(), service :: atom | binary) ::
           {:ok, binary} | {:error, binary}
-  def reload_service(idp, service) do
+  def reload_service(idp, service, options \\ []) do
     with {:ok, idp} <- prep_idp(idp),
          {:ok, service} <- IdP.validate_service(idp, service) do
-      HTTP.get_reload(idp, service)
+      Service.reload(idp, service)
     else
       err -> err
     end
@@ -139,7 +144,7 @@ defmodule Shin do
   @spec metrics(idp :: binary | IdP.t()) :: {:ok, map()} | {:error, binary}
   def metrics(idp) do
     with {:ok, idp} <- prep_idp(idp) do
-      HTTP.get_json(idp, idp.metrics_path)
+      Metrics.query(idp)
     else
       err -> err
     end
@@ -160,10 +165,8 @@ defmodule Shin do
   @spec metrics(idp :: binary | IdP.t(), group :: atom | binary) ::
           {:ok, map()} | {:error, binary}
   def metrics(idp, group) do
-    with {:ok, idp} <- prep_idp(idp),
-         {:ok, group} <- IdP.validate_metric_group(idp, group),
-         metrics_path <- IdP.metrics_path(idp, group) do
-      HTTP.get_json(idp, metrics_path)
+    with {:ok, idp} <- prep_idp(idp) do
+      Metrics.query(idp, group)
     else
       err -> err
     end
@@ -212,9 +215,36 @@ defmodule Shin do
   ####
 
   def attributes(idp, sp, username, options \\ []) do
+    with {:ok, idp} <- prep_idp(idp) do
+      Attributes.query(idp, sp, username, options)
+    else
+      err -> err
+    end
+  end
 
 
+  def assertion(idp, sp, username, options \\ []) do
+    with {:ok, idp} <- prep_idp(idp) do
+      Assertion.query(idp, sp, username, options)
+    else
+      err -> err
+    end
+  end
 
+  def metadata(idp, entity_id, options \\ []) do
+    with {:ok, idp} <- prep_idp(idp) do
+      Metadata.query(idp, entity_id, options)
+    else
+      err -> err
+    end
+  end
+
+  def reload_metadata(idp, mdp_id, options \\ []) do
+    with {:ok, idp} <- prep_idp(idp) do
+      Metadata.reload(idp, mdp_id, options)
+    else
+      err -> err
+    end
   end
 
   ####################################################################################################

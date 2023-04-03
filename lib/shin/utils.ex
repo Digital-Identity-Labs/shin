@@ -32,9 +32,13 @@ defmodule Shin.Utils do
 
   # shibboleth.authn.Password.AccountLockoutManager/jdoe%21192.168.1.1
   def build_lockout_path(idp, username, ip_address, options) do
-    [idp.lockout_path, idp.lockout_bean, "#{username}!#{ip_address}"] |> Enum.join("/")
+    [idp.lockout_path, idp.lockout_bean, "#{username}!#{ip_address}"]
+    |> Enum.join("/")
   end
 
+  def build_service_reload_query(idp, service, options) do
+    query = [id: service]
+  end
 
   ####################################################################################################
 

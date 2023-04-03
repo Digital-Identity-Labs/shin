@@ -176,7 +176,7 @@ defmodule Shin.Metrics do
     |> Enum.into(%{})
   end
 
-   #########
+  #########
 
   @doc """
   Returns default (all) raw metrics from the IdP as a map.
@@ -192,7 +192,7 @@ defmodule Shin.Metrics do
   """
   @spec query(idp :: binary | IdP.t()) :: {:ok, map()} | {:error, binary}
   def query(idp) do
-    HTTP.get_json(idp, idp.metrics_path)
+    HTTP.get_data(idp, IdP.metrics_path(idp))
   end
 
   @doc """
@@ -212,7 +212,7 @@ defmodule Shin.Metrics do
   def query(idp, group) do
     with {:ok, group} <- IdP.validate_metric_group(idp, group),
          metrics_path <- IdP.metrics_path(idp, group) do
-      HTTP.get_json(idp, metrics_path)
+      HTTP.get_data(idp, metrics_path)
     else
       err -> err
     end
