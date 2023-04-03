@@ -3,7 +3,7 @@ defmodule Shin.Metadata do
   @moduledoc """
   XXX
   """
-  alias Shin.HTTPX, as: HTTP
+  alias Shin.HTTP
   alias Shin.Utils
   alias Shin.Metrics
 

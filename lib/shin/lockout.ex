@@ -4,7 +4,7 @@ defmodule Shin.Lockout do
   XXX
   """
 
-  alias Shin.HTTPX, as: HTTP
+  alias Shin.HTTP
   alias Shin.Utils
 
   def query(idp, username, ip_address, options \\ []) do

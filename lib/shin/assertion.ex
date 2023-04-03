@@ -2,7 +2,7 @@ defmodule Shin.Assertion do
 
   @moduledoc false
 
-  alias Shin.HTTPX, as: HTTP
+  alias Shin.HTTP
   alias Shin.Utils
 
   def query(idp, sp, username, options \\ []) do

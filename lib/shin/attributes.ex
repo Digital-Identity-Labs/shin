@@ -4,7 +4,7 @@ defmodule Shin.Attributes do
   XXX
   """
 
-  alias Shin.HTTPX, as: HTTP
+  alias Shin.HTTP
   alias Shin.Utils
 
   def query(idp, sp, username, options \\ []) do
