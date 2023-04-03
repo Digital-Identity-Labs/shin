@@ -170,7 +170,7 @@ defmodule Shin do
   end
 
   @doc """
-  Returns reformated metrics as a simplified structure.
+  Returns reformatted metrics as a simplified structure.
 
   The only parameter is the IdP struct or URL. The default report will be returned.
 
@@ -187,7 +187,7 @@ defmodule Shin do
   end
 
   @doc """
-  Returns metrics reformated using the specified module.
+  Returns metrics reformatted using the specified module.
 
   The first parameter is the IdP struct or URL, the second is the alias or module name for the report processor.
 
