@@ -3,55 +3,102 @@ defmodule Shin.HTTP do
   @moduledoc false
 
   alias Shin.IdP
+  alias Shin.HTTP
+  alias Shin.Utils
 
-  @spec get_json(idp :: IdP.t(), path :: binary) :: {:ok, map} | {:error, binary}
-  def get_json(idp, path) do
-    case Tesla.get(client(idp, :json), path) do
-      {:ok, result} -> if result.status == 200 do
-                         {:ok, result.body}
+  @spec get_data(idp :: IdP.t(), path :: binary, options :: keyword()) :: {:ok, map} | {:error, binary}
+  def get_data(idp, path, params \\ [], options \\ []) do
+
+    results = Req.get(client(idp, options), url: path, params: params)
+
+    case results do
+      {:ok, result} -> if Enum.member?(200..299, result.status) do
+                         {:ok, tidy_data(result.body)}
                        else
                          {:error, "Error #{result.status}"}
                        end
       {:error, msg} -> {:error, msg}
     end
+
   end
 
-  @spec get_reload(idp :: IdP.t(), service :: binary) :: {:ok, binary} | {:error, binary}
-  def get_reload(idp, service) do
-    case Tesla.get(client(idp, :text), idp.reload_path, query: [id: service]) do
-      {:ok, result} -> if result.status == 200 do
-                          {:ok, String.trim(result.body)}
+  def post_data(idp, path, params \\ [], options \\ []) do
+
+    results = Req.post(client(idp, options), url: path, params: params)
+
+    case results do
+      {:ok, result} -> if Enum.member?(200..299, result.status) do
+                         {:ok, tidy_data(result.body)}
                        else
-                          {:error, "Error #{result.status}"}
+                         {:error, "Error #{result.status}"}
                        end
       {:error, msg} -> {:error, msg}
     end
+
   end
 
-  @spec client(idp :: IdP.t(), type :: atom) :: Tesla.Client.t()
-  defp client(%IdP{} = idp, type) when is_struct(idp) do
+  def del_data(idp, path, params \\ [], options \\ []) do
 
-    middleware = essential_middleware(idp)
-    middleware = case type do
-      :json -> [Tesla.Middleware.JSON | middleware]
-      :text -> middleware
+    results = Req.delete(client(idp, options), url: path, params: params)
+
+    case results do
+      {:ok, result} -> if Enum.member?(200..299, result.status) do
+                         {:ok, tidy_data(result.body)}
+                       else
+                         {:error, "Error #{result.status}"}
+                       end
+      {:error, msg} -> {:error, msg}
     end
 
-    Tesla.client(middleware)
+  end
+  ####################################################################################################
 
+  defp client(idp, options \\ [])
+  defp client(idp, options) when is_struct(idp) do
+
+    Req.new(
+      base_url: idp.base_url,
+      user_agent: http_agent_name(),
+      headers: [{"accept", http_type(options[:type])}, {"Accept-Charset", "utf-8"}],
+      connect_options: [
+        timeout: idp.timeout
+      ],
+      max_retries: 2
+    )
   end
 
   defp client(_idp, _type) do
     raise "Shin.HTTP client requires a Shin.IdP struct as the first parameter!"
   end
 
-  defp essential_middleware(idp) do
-    [
-      {Tesla.Middleware.BaseUrl, idp.base_url},
-      {Tesla.Middleware.Compression, format: "gzip"},
-      {Tesla.Middleware.Timeout, timeout: idp.timeout}
+  defp tidy_data(data) when is_binary(data) do
+    data
+    |> String.trim()
+  end
 
-    ]
+  defp tidy_data(data) when is_map(data) do
+    data
+  end
+
+  defp http_agent_name do
+    Shin.Utils.named_version()
+  end
+
+  defp http_type(type) when is_binary(type) do
+    type
+    |> String.to_existing_atom()
+    |> http_type()
+  end
+
+  defp http_type(type) do
+    case type do
+      nil -> "*/*"
+      :saml2 -> "application/samlassertion+xml"
+      :saml_md -> "application/samlmetadata+xml"
+      :json -> "application/json"
+      :txt -> "text/plain"
+      :text -> "text/plain"
+    end
   end
 
 end
