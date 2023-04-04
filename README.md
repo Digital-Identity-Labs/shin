@@ -20,7 +20,7 @@ dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:shin, "~> 0.1.0"}
+    {:shin, "~> 0.2.0"}
   ]
 end
 ```
