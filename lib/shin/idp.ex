@@ -50,7 +50,8 @@ defmodule Shin.IdP do
                metric_groups: list(),
                reloadable_services: map(),
                no_dns_check: boolean(),
-               timeout: integer()
+               timeout: integer(),
+               retries: integer()
              }
 
   defstruct [
@@ -65,7 +66,8 @@ defmodule Shin.IdP do
     metric_groups: @default_metric_groups,
     reloadable_services: @default_reloadable_services,
     no_dns_check: false,
-    timeout: 2_000
+    timeout: 2_000,
+    retries: 2
   ]
 
   @doc """

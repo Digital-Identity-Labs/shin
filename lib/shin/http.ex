@@ -63,7 +63,7 @@ defmodule Shin.HTTP do
       connect_options: [
         timeout: idp.timeout
       ],
-      max_retries: 2
+      max_retries: idp.retries
     )
   end
 
