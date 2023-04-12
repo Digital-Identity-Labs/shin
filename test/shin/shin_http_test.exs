@@ -3,7 +3,6 @@ defmodule ShinHTTPTest do
 
   alias Shin.HTTP
 
-
   setup do
     bypass = Bypass.open()
     {:ok, bypass: bypass}
