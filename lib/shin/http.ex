@@ -24,7 +24,12 @@ defmodule Shin.HTTP do
 
   def post_data(idp, path, params \\ [], options \\ []) do
 
-    results = Req.post(client(idp, options), url: path, params: params)
+
+    pclient = client(idp, options)
+              |> Req.Request.put_new_header("content-type", "application/json")
+
+    results = Req.post(pclient, url: path, params: params)
+
 
     case results do
       {:ok, result} -> if Enum.member?(200..299, result.status) do
