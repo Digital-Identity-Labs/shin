@@ -6,66 +6,6 @@ defmodule ShinTest do
   alias Shin
   alias Shin.IdP
 
-  ###  setup_all do
-  ###    Tesla.Mock.mock_global(
-  ###      fn
-  ###        %{
-  ###          method: :get,
-  ###          url: "https://login.localhost.demo.university/idp/profile/admin/reload-service"
-  ###        } ->
-  ###          %Tesla.Env{status: 200, body: "Configuration reloaded for 'shibboleth.MetadataResolverService'\n"}
-  ###
-  ###        %{
-  ###          method: :get,
-  ###          url: "https://login-miss.localhost.demo.university/idp/profile/admin/reload-service"
-  ###        } ->
-  ###          %Tesla.Env{status: 404, body: "Error 404 Page Not Found\n"}
-  ###
-  ###        %{
-  ###          method: :get,
-  ###          url: "https://login-error.localhost.demo.university/idp/profile/admin/reload-service"
-  ###        } ->
-  ###          %Tesla.Env{status: 500, body: "Error 500 Guru Meditation\n"}
-  ###
-  ###        %{
-  ###          method: :get,
-  ###          url: "https://login.localhost.demo.university/idp/profile/admin/metrics"
-  ###        } ->
-  ###          %Tesla.Env{status: 200, body: MetricsExamples.complete()}
-  ###
-  ###        %{
-  ###          method: :get,
-  ###          url: "https://login-error.localhost.demo.university/idp/profile/admin/metrics"
-  ###        } ->
-  ###          %Tesla.Env{status: 500, body: "Error 500\n"}
-  ###
-  ###        %{
-  ###          method: :get,
-  ###          url: "https://login.localhost.demo.university/idp/profile/admin/metrics/core"
-  ###        } ->
-  ###          %Tesla.Env{status: 200, body: MetricsExamples.core()}
-  ###
-  ###        %{
-  ###          method: :get,
-  ###          url: "https://login-error.localhost.demo.university/idp/profile/admin/metrics/core"
-  ###        } ->
-  ###          %Tesla.Env{status: 500, body: "Error 404 Page Not Found\n"}
-  ###
-  ###      end
-  ###    )
-  ###    :ok
-  ###  end
-  ##
-  ###  {:ok, good_idp} = Shin.idp("https://login.localhost.demo.university/idp")
-  ###  @good_idp good_idp
-  ###
-  ###  {:ok, miss_idp} = Shin.idp("https://login-miss.localhost.demo.university/idp")
-  ###  @miss_idp miss_idp
-  ###
-  ###  {:ok, error_idp} = Shin.idp("https://login-error.localhost.demo.university/idp")
-  ###  @error_idp error_idp
-  ##
-
   setup do
     bypass = Bypass.open()
     {:ok, bypass: bypass}
