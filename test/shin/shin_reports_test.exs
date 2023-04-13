@@ -3,7 +3,7 @@ defmodule ShinReportsTest do
 
   alias Shin.Reports
 
-  @big_metrics MetricsExamples.complete()
+  @big_metrics MetricsExamples.complete_parsed()
 
 
   describe "reporters/0" do
