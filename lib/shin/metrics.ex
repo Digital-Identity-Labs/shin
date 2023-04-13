@@ -7,6 +7,55 @@ defmodule Shin.Metrics do
   alias Shin.HTTP
   alias Shin.IdP
 
+
+  @doc """
+  Returns default (all) raw metrics from the IdP as a map.
+
+  Pass an IdP as the only parameter.
+
+  ## Examples
+
+    ```
+    {:ok, metrics} = Shin.Metrics.query(idp)
+    ```
+
+  """
+  @spec query(idp :: IdP.t()) :: {:ok, map()} | {:error, binary}
+  def query(idp) when is_binary(idp) do
+    {:error, "IdP record is required"}
+  end
+
+  def query(idp) do
+    HTTP.get_data(idp, IdP.metrics_path(idp))
+  end
+
+  @doc """
+  Returns the specified raw metrics group from the IdP as a map.
+
+  Pass an IdP struct as the first parameter and the name of the group as the second (as atom or binary)
+
+  ## Examples
+
+    ```
+    {:ok, metrics} = Shin.Metrics.query(idp, :core)
+    ```
+
+  """
+  @spec query(idp :: IdP.t(), group :: atom | binary) ::
+          {:ok, map()} | {:error, binary}
+  def query(idp, group) when is_binary(idp) do
+    {:error, "IdP record is required"}
+  end
+
+  def query(idp, group) do
+    with {:ok, group} <- IdP.validate_metric_group(idp, group),
+         metrics_path <- IdP.metrics_path(idp, group) do
+      HTTP.get_data(idp, metrics_path)
+    else
+      err -> err
+    end
+  end
+
   @doc """
   List the keys for all gauges in the metrics.
 
@@ -177,46 +226,5 @@ defmodule Shin.Metrics do
   end
 
   #########
-
-  @doc """
-  Returns default (all) raw metrics from the IdP as a map.
-
-  Pass an IdP as the only parameter.
-
-  ## Examples
-
-    ```
-    {:ok, metrics} = Shin.Metrics.query(idp)
-    ```
-
-  """
-  @spec query(idp :: binary | IdP.t()) :: {:ok, map()} | {:error, binary}
-  def query(idp) do
-    HTTP.get_data(idp, IdP.metrics_path(idp))
-  end
-
-  @doc """
-  Returns the specified raw metrics group from the IdP as a map.
-
-  Pass an IdP struct or URL binary as the first parameter and the name of the group as the second (as atom or binary)
-
-  ## Examples
-
-    ```
-    {:ok, metrics} = Shin.Metrics.query(idp, :core)
-    ```
-
-  """
-  @spec query(idp :: binary | IdP.t(), group :: atom | binary) ::
-          {:ok, map()} | {:error, binary}
-  def query(idp, group) do
-    with {:ok, group} <- IdP.validate_metric_group(idp, group),
-         metrics_path <- IdP.metrics_path(idp, group) do
-      HTTP.get_data(idp, metrics_path)
-    else
-      err -> err
-    end
-  end
-
 
 end
