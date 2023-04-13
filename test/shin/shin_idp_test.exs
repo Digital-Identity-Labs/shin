@@ -50,7 +50,7 @@ defmodule ShinIdPTest do
       assert {:error, _} = IdP.configure("https://dancing.dancing.newt")
     end
 
-    test "returns an IdP struct with default values that match the defaults on a Shibboleth IdP" do 
+    test "returns an IdP struct with default values that match the defaults on a Shibboleth IdP" do
       {:ok, idp} = IdP.configure("https://indiid.net/idp")
 
       assert %IdP{
