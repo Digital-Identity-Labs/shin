@@ -228,124 +228,358 @@ defmodule ShinTest do
     end
 
   end
-  ##
-  ##  describe "metrics/1" do
-  ##
-  ##    test "will return a map of raw metrics data if the service is available" do
-  ##      assert {
-  ##               :ok,
-  ##               %{
-  ##                 "gauges" => %{
-  ##                   "net.shibboleth.idp.version" => %{
-  ##                     "value" => "4.2.1"
-  ##                   }
-  ##                 }
-  ##               }
-  ##             } = Shin.metrics(@good_idp)
-  ##    end
-  ##
-  ##    test "will produce a decent error if service is unavailable" do
-  ##      assert {:error, "Error 500"} = Shin.metrics(@error_idp)
-  ##    end
-  ##
-  ##    test "can be passed an IdP record (expected)" do
-  ##      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-  ##      assert {:ok, %{"gauges" => _things}} = Shin.metrics(idp)
-  ##    end
-  ##
-  ##    test "can be passed a base URL for the IdP" do
-  ##      assert {:ok, %{"gauges" => _things}} = Shin.metrics("https://login.localhost.demo.university/idp")
-  ##    end
-  ##
-  ##  end
-  #
-  ##  describe "metrics/2" do
-  ##
-  ##    test "will return a map of a subset of raw metrics data if the service is available and the group is known" do
-  ##      assert {
-  ##               :ok,
-  ##               %{
-  ##                 "gauges" => %{
-  ##                   "cores.available" => _
-  ##                 }
-  ##               }
-  ##             } = Shin.metrics(@good_idp, :core)
-  ##    end
-  ##
-  ##    test "will complain if passed an unknown group" do
-  ##      assert {:error, "IdP does not support metric group 'baboon'"} = Shin.metrics(@good_idp, :baboon)
-  ##    end
-  ##
-  ##    test "will produce a decent error if service is unavailable" do
-  ##      assert {:error, "Error 500"} = Shin.metrics(@error_idp, :core)
-  ##    end
-  ##
-  ##    test "can be passed an IdP record (expected)" do
-  ##      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-  ##      assert {:ok, %{"gauges" => _things}} = Shin.metrics(idp, :core)
-  ##    end
-  ##
-  ##    test "can be passed a base URL for the IdP" do
-  ##      assert {:ok, %{"gauges" => _things}} = Shin.metrics("https://login.localhost.demo.university/idp", :core)
-  ##    end
-  ##
-  ##  end
-  #
-  #  describe "report/1" do
-  #
-  #    test "will return a default struct containing processed metrics (system info)" do
-  #      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(@good_idp)
-  #    end
-  #
-  #    test "will produce a decent error if service is unavailable" do
-  #      assert {:error, "Error 500"} = Shin.report(@error_idp)
-  #    end
-  #
-  #    test "can be passed an IdP record (expected)" do
-  #      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-  #      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp)
-  #    end
-  #
-  #    test "can be passed a base URL for the IdP" do
-  #      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report("https://login.localhost.demo.university/idp")
-  #    end
-  #
-  #  end
-  #
-  #  describe "report/2" do
-  #
-  #    test "will return a struct containing processed metrics as specified by the report Module" do
-  #      assert {:ok, %Shin.Reports.IdPInfo{uptime: _}} = Shin.report(@good_idp, Shin.Reports.IdPInfo)
-  #    end
-  #
-  #    test "will return a struct containing processed metrics as specified by the report alias" do
-  #      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(@good_idp, :system_info)
-  #    end
-  #
-  #    test "will complain if passed an unknown alias" do
-  #      assert {:error, _} = Shin.report(@good_idp, :badgers)
-  #    end
-  #
-  #    test "will produce a decent error if service is unavailable" do
-  #      assert {:error, "Error 500"} = Shin.report(@error_idp, :system_info)
-  #    end
-  #
-  #    test "can be passed an IdP record (expected)" do
-  #      {:ok, idp} = Shin.idp("https://login.localhost.demo.university/idp")
-  #      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp, Shin.Reports.SystemInfo)
-  #    end
-  #
-  #    test "can be passed a base URL for the IdP" do
-  #      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(
-  #               "https://login.localhost.demo.university/idp",
-  #               :system_info
-  #             )
-  #    end
-  #
-  #  end
 
+  describe "metrics/1" do
+
+    test "will return a map of raw metrics data if the service is available", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {
+               :ok,
+               %{
+                 "gauges" => %{
+                   "net.shibboleth.idp.version" => %{
+                     "value" => "4.2.1"
+                   }
+                 }
+               }
+             } = Shin.metrics(idp)
+    end
+
+    test "will produce a decent error if service is unavailable", %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 500, "A fake error has occurred")
+          |> Plug.Conn.merge_resp_headers([{"content-type", "text/plain"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+
+      assert {:error, "Error 500"} = Shin.metrics(idp)
+    end
+
+    test "can be passed an IdP record (expected)", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:ok, %{"gauges" => _things}} = Shin.metrics(idp)
+
+    end
+
+    test "can be passed a base URL for the IdP", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      url = idp_endpoint_url(bypass.port)
+
+      assert {:ok, %{"gauges" => _things}} = Shin.metrics(url)
+    end
+
+  end
+
+  describe "metrics/2" do
+
+    test "will return a map of a subset of raw metrics data if the service is available and the group is known",
+         %{bypass: bypass} do
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics/core",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.core_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {
+               :ok,
+               %{
+                 "gauges" => %{
+                   "cores.available" => _
+                 }
+               }
+
+             } = Shin.metrics(idp, :core)
+    end
+
+    test "will complain if passed an unknown group", %{bypass: bypass} do
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+      assert {:error, "IdP does not support metric group 'baboon'"} = Shin.metrics(idp, :baboon)
+    end
+
+    test "will produce a decent error if service is unavailable", %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics/core",
+        fn conn ->
+          Plug.Conn.resp(conn, 500, "A fake error has occurred")
+          |> Plug.Conn.merge_resp_headers([{"content-type", "text/plain"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:error, "Error 500"} = Shin.metrics(idp, :core)
+    end
+
+    test "can be passed an IdP record (expected)", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics/core",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.core_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:ok, %{"gauges" => _things}} = Shin.metrics(idp, :core)
+
+    end
+
+    test "can be passed a base URL for the IdP", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics/core",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      url = idp_endpoint_url(bypass.port)
+
+      assert {:ok, %{"gauges" => _things}} = Shin.metrics(url, :core)
+
+    end
+
+  end
+
+  describe "report/1" do
+
+    test "will return a default struct containing processed metrics (system info)", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp)
+    end
+
+    test "will produce a decent error if service is unavailable", %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 500, "A fake error has occurred")
+          |> Plug.Conn.merge_resp_headers([{"content-type", "text/plain"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:error, "Error 500"} = Shin.report(idp)
+    end
+
+    test "can be passed an IdP record (expected)", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp)
+
+    end
+
+    test "can be passed a base URL for the IdP", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      url = idp_endpoint_url(bypass.port)
+
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(url)
+    end
+
+  end
+
+  describe "report/2" do
+
+    test "will return a struct containing processed metrics as specified by the report Module", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:ok, %Shin.Reports.IdPInfo{uptime: _}} = Shin.report(idp, Shin.Reports.IdPInfo)
+    end
+
+    test "will return a struct containing processed metrics as specified by the report alias", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp, :system_info)
+    end
+
+    test "will complain if passed an unknown alias", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:error, _} = Shin.report(idp, :badgers)
+    end
+
+    test "will produce a decent error if service is unavailable", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 500, "OOPS")
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:error, "Error 500"} = Shin.report(idp, :system_info)
+    end
+
+    test "can be passed an IdP record (expected)", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(idp, Shin.Reports.SystemInfo)
+    end
+
+    test "can be passed a base URL for the IdP", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      idp_url = idp_endpoint_url(bypass.port)
+
+      assert {:ok, %Shin.Reports.SystemInfo{hostname: _}} = Shin.report(
+               idp_url,
+               :system_info
+             )
+    end
+
+  end
 
   defp idp_endpoint_url(port), do: "http://localhost:#{port}/idp"
-
 
 end
