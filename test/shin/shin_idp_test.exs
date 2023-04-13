@@ -50,7 +50,7 @@ defmodule ShinIdPTest do
       assert {:error, _} = IdP.configure("https://dancing.dancing.newt")
     end
 
-    test "returns an IdP struct with default values that match the defaults on a Shibboleth IdP" do
+    test "returns an IdP struct with default values that match the defaults on a Shibboleth IdP" do 
       {:ok, idp} = IdP.configure("https://indiid.net/idp")
 
       assert %IdP{
@@ -58,7 +58,13 @@ defmodule ShinIdPTest do
                reload_path: "profile/admin/reload-service",
                metric_groups: @default_metric_groups,
                reloadable_services: @default_reloadable_services,
-               timeout: 2_000
+               timeout: 2_000,
+               retries: 2,
+               attributes_path: "profile/admin/resolvertest",
+               md_query_path: "profile/admin/mdquery",
+               md_reload_path: "profile/admin/reload-metadata",
+               lockout_path: "profile/admin/lockout",
+               lockout_bean: "shibboleth.StorageBackedAccountLockoutManager"
              } = idp
 
     end
@@ -93,7 +99,13 @@ defmodule ShinIdPTest do
                reload_path: "profile/admin/reload-service",
                metric_groups: @default_metric_groups,
                reloadable_services: @default_reloadable_services,
-               timeout: 2_000
+               timeout: 2_000,
+               retries: 2,
+               attributes_path: "profile/admin/resolvertest",
+               md_query_path: "profile/admin/mdquery",
+               md_reload_path: "profile/admin/reload-metadata",
+               lockout_path: "profile/admin/lockout",
+               lockout_bean: "shibboleth.StorageBackedAccountLockoutManager"
              } = idp
 
     end
@@ -108,7 +120,13 @@ defmodule ShinIdPTest do
           reloadable_services: %{
             birthday_party_resolver: "shibboleth.BirthdayPartyResolverService"
           },
-          timeout: 4_000
+          timeout: 4_000,
+          retries: 0,
+          attributes_path: "profile/admin3/resolvertest",
+          md_query_path: "profile/admin3/mdquery",
+          md_reload_path: "profile/admin3/reload-metadata",
+          lockout_path: "profile/admin3/lockout",
+          lockout_bean: "shibboleth.SausageRollBackedAccountLockoutManager"
         ]
       )
 
@@ -119,7 +137,13 @@ defmodule ShinIdPTest do
                reloadable_services: %{
                  birthday_party_resolver: "shibboleth.BirthdayPartyResolverService"
                },
-               timeout: 4_000
+               timeout: 4_000,
+               retries: 0,
+               attributes_path: "profile/admin3/resolvertest",
+               md_query_path: "profile/admin3/mdquery",
+               md_reload_path: "profile/admin3/reload-metadata",
+               lockout_path: "profile/admin3/lockout",
+               lockout_bean: "shibboleth.SausageRollBackedAccountLockoutManager"
              } = idp
 
     end
