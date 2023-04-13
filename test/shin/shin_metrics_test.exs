@@ -151,9 +151,8 @@ defmodule ShinMetricsTest do
     end
 
     test "cannot be passed a base URL for the IdP", %{bypass: bypass} do
-      
-      url = idp_endpoint_url(bypass.port)
 
+      url = idp_endpoint_url(bypass.port)
       assert {:error, "IdP record is required"} = Metrics.query(url, :core)
 
     end
