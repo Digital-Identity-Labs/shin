@@ -1,0 +1,39 @@
+{
+  "attributes": [
+    {
+      "name": "eduPersonScopedAffiliation",
+      "values": [
+        "member@example.ac.uk",
+        "staff@example.ac.uk",
+        "alum@example.ac.uk"
+      ]
+    },
+    {
+      "name": "eduPersonUniqueID",
+      "values": [
+        "pete@example.ac.uk"
+      ]
+    },
+    {
+      "name": "o",
+      "values": [
+        "Example University"
+      ]
+    },
+    {
+      "name": "eduPersonPrincipalName",
+      "values": [
+        "pete@example.ac.uk"
+      ]
+    },
+    {
+      "name": "eduPersonEntitlement",
+      "values": [
+        "urn:mace:dir:entitlement:common-lib-terms",
+        "https://idp.example.ac.uk/dir/ent/stationery_cupboard_access"
+      ]
+    }
+  ],
+  "principal": "pete",
+  "requester": "https://test.ukfederation.org.uk/entity"
+}
