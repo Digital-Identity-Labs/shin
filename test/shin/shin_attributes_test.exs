@@ -154,7 +154,7 @@ defmodule ShinAttributesTest do
 
     end
 
-    test "responds with an error if passed a URL for the IdP",
+    test "raises an exception if passed a URL for the IdP",
          %{bypass: bypass} do
 
       url = idp_endpoint_url(bypass.port)
