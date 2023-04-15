@@ -7,13 +7,23 @@ defmodule Shin.Metadata do
   alias Shin.Utils
   alias Shin.Metrics
 
-  def query(idp, entity_id, options \\ []) do
+  def query(idp, entity_id, options \\ [])
+  def query(idp, _, _) when is_binary(idp) do
+    {:error, "IdP record is required"}
+  end
+
+  def query(idp, entity_id, options) do
     query_params = Utils.build_mdq_query(idp, entity_id, options)
     options = Keyword.merge(options, [type: :saml_md])
     HTTP.get_data(idp, idp.md_query_path, query_params, options)
   end
 
-  def query!(idp, entity_id, options \\ []) do
+  def query!(idp, sentity_id, options \\ [])
+  def query!(idp, _, _) when is_binary(idp) do
+    raise "IdP record is required"
+  end
+
+  def query!(idp, entity_id, options) do
     Utils.wrap_results(query(idp, entity_id, options))
   end
 
