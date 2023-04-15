@@ -68,7 +68,7 @@ defmodule ShinAssertionTest do
       assert  String.contains?(assertion, ~s|Version="2.0"|)
     end
 
-    test "request needs to be using the resolver test endpoint of the IdP, but with SAML2 option and media type",
+    test "request needs to be using the resolvertest endpoint of the IdP, but with SAML2 option and media type",
          %{bypass: bypass} do
 
       ## Otherwise these tests aren't really testing much other than the mock
