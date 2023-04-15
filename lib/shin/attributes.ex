@@ -7,12 +7,23 @@ defmodule Shin.Attributes do
   alias Shin.HTTP
   alias Shin.Utils
 
-  def query(idp, sp, username, options \\ []) do
+  def query(idp, _sp, _username, options \\ [])
+  def query(idp, _, _, _) when is_binary(idp) do
+    {:error, "IdP record is required"}
+  end
+
+  def query(idp, sp, username, options) do
     query_params = Utils.build_attribute_query(idp, sp, username, options)
+    options = Keyword.merge(options, [type: :json])
     HTTP.get_data(idp, idp.attributes_path, query_params, options)
   end
 
-  def query!(idp, sp, username, options \\ []) do
+  def query!(idp, sp, username, options \\ [])
+  def query!(idp, _, _, _) when is_binary(idp) do
+    raise "IdP record is required"
+  end
+
+  def query!(idp, sp, username, options) do
     Utils.wrap_results(query(idp, sp, username, options))
   end
 
