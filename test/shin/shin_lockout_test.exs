@@ -4,16 +4,19 @@ defmodule ShinLockoutTest do
   alias Shin.IdP
   alias Shin.Lockout
 
-  describe "query/4" do
+  ## This feature is not officially available yet and is UNTESTED.
+  ##
 
-  end
-
-  describe "increment/4" do
-
-  end
-
-  describe "clear/4" do
-
-  end
+#  describe "query/4" do
+#
+#  end
+#
+#  describe "increment/4" do
+#
+#  end
+#
+#  describe "clear/4" do
+#
+#  end
 
 end
