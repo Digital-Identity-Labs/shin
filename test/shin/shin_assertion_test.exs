@@ -20,6 +20,7 @@ defmodule ShinAssertionTest do
         "/idp/profile/admin/resolvertest",
         fn conn ->
           Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
         end
       )
 
@@ -51,6 +52,7 @@ defmodule ShinAssertionTest do
         "/idp/profile/admin/resolvertest",
         fn conn ->
           Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
         end
       )
 
@@ -86,7 +88,7 @@ defmodule ShinAssertionTest do
                  } = conn.query_params
 
           Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
-          |> Plug.Conn.merge_resp_headers([{"content-type", "text/plain"}])
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
         end
       )
 
@@ -111,6 +113,7 @@ defmodule ShinAssertionTest do
         "/idp/profile/admin/resolvertest",
         fn conn ->
           Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
         end
       )
 
@@ -145,6 +148,7 @@ defmodule ShinAssertionTest do
         "/idp/profile/admin/resolvertest",
         fn conn ->
           Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
         end
       )
 
@@ -180,7 +184,7 @@ defmodule ShinAssertionTest do
                  } = conn.query_params
 
           Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
-          |> Plug.Conn.merge_resp_headers([{"content-type", "text/plain"}])
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
         end
       )
 
