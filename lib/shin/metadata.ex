@@ -45,7 +45,10 @@ defmodule Shin.Metadata do
   def reload(idp, mdp_id, options \\ []) do
     query_params = Utils.build_mdr_query(idp, mdp_id, options)
     options = Keyword.merge(options, [type: :text])
-    HTTP.get_data(idp, idp.md_reload_path, query_params, options)
+    case HTTP.get_data(idp, idp.md_reload_path, query_params, options) do
+      {:ok, message} -> {:ok, message}
+      {:error, message} -> {:error, "Metadata reload failed for '#{mdp_id}'"}
+    end
   end
 
   def cache(idp, entity_ids) do
