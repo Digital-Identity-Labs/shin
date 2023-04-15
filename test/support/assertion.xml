@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" ID="_19b94e1b3cf3ca50f6f54da3714f9615" IssueInstant="2023-04-14T10:51:04.460Z" Version="2.0">
+  <saml2:Issuer>https://idp.example.ac.uk/entity</saml2:Issuer>
+  <saml2:Subject>
+    <saml2:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" NameQualifier="https://idp.example.ac.uk/entity" SPNameQualifier="https://test.ukfederation.org.uk/entity">ABdzZWNyZXQxlibhAUw6HQ9hfByhHXBsgh0rZT0my5KMEO2tFyq4ggW5GLfRhPvKyBYOH+ZjTwRNus5Kt7YtM5vV+hhfe7+DbBTyrqK1EphYhfzHXsAfAthewt5RfQZAe87PLJLcJ7rsWOxVJFdgxloh</saml2:NameID>
+  </saml2:Subject>
+  <saml2:AttributeStatement>
+    <saml2:Attribute FriendlyName="eduPersonScopedAffiliation" Name="urn:oid:1.3.6.1.4.1.5923.1.1.1.9" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml2:AttributeValue>member@example.ac.uk</saml2:AttributeValue>
+      <saml2:AttributeValue>staff@example.ac.uk</saml2:AttributeValue>
+      <saml2:AttributeValue>alum@example.ac.uk</saml2:AttributeValue>
+    </saml2:Attribute>
+    <saml2:Attribute FriendlyName="o" Name="urn:oid:2.5.4.10" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml2:AttributeValue>Example University</saml2:AttributeValue>
+    </saml2:Attribute>
+    <saml2:Attribute FriendlyName="eduPersonPrincipalName" Name="urn:oid:1.3.6.1.4.1.5923.1.1.1.6" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml2:AttributeValue>pete@example.ac.uk</saml2:AttributeValue>
+    </saml2:Attribute>
+    <saml2:Attribute FriendlyName="eduPersonEntitlement" Name="urn:oid:1.3.6.1.4.1.5923.1.1.1.7" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml2:AttributeValue>urn:mace:dir:entitlement:common-lib-terms</saml2:AttributeValue>
+      <saml2:AttributeValue>https://idp.example.ac.uk/dir/ent/stationery_cupboard_access</saml2:AttributeValue>
+    </saml2:Attribute>
+  </saml2:AttributeStatement>
+</saml2:Assertion>
