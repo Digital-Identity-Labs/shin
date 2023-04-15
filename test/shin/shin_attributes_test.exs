@@ -4,6 +4,8 @@ defmodule ShinAttributesTest do
   alias Shin.IdP
   alias Shin.Attributes
 
+  @query_results AttributesExamples.basic_json()
+
   setup do
     bypass = Bypass.open()
     {:ok, bypass: bypass}
@@ -250,29 +252,86 @@ defmodule ShinAttributesTest do
 
   describe "principal/1" do
 
+    test "returns the principal from attribute query results" do
+      assert "pete" = Attributes.principal(@query_results)
+    end
+
   end
 
   describe "username/1" do
+
+    test "returns the principal from attribute query results" do
+      assert "pete" = Attributes.username(@query_results)
+    end
 
   end
 
   describe "requester/1" do
 
+    test "returns the SP entity ID from attribute query results" do
+      assert "https://test.ukfederation.org.uk/entity" = Attributes.requester(@query_results)
+    end
+
   end
 
   describe "sp/1" do
+
+    test "returns the SP entity ID from attribute query results" do
+      assert "https://test.ukfederation.org.uk/entity" = Attributes.sp(@query_results)
+    end
 
   end
 
   describe "attributes/1" do
 
+    test "returns a map of attributes (friendly-name to values) taken from attribute query results" do
+      assert %{
+               "eduPersonEntitlement" => [
+                 "urn:mace:dir:entitlement:common-lib-terms",
+                 "https://idp.example.ac.uk/dir/ent/stationery_cupboard_access"
+               ],
+               "eduPersonPrincipalName" => ["pete@example.ac.uk"],
+               "eduPersonScopedAffiliation" => ["member@example.ac.uk", "staff@example.ac.uk", "alum@example.ac.uk"],
+               "eduPersonUniqueID" => ["pete@example.ac.uk"],
+               "o" => ["Example University"]
+             } = Attributes.attributes(@query_results)
+    end
+
   end
 
   describe "names/1" do
 
+    test "lists the friendly names of all attributes" do
+      assert [
+               "eduPersonEntitlement",
+               "eduPersonPrincipalName",
+               "eduPersonScopedAffiliation",
+               "eduPersonUniqueID",
+               "o"
+             ] = Attributes.names(@query_results)
+    end
+
   end
 
-  describe "values/1" do
+  describe "values/2" do
+
+    test "lists the values of the specified attribute" do
+      assert  ["member@example.ac.uk", "staff@example.ac.uk", "alum@example.ac.uk"] = Attributes.values(
+                @query_results,
+                "eduPersonScopedAffiliation"
+              )
+    end
+
+    test "lookup of the specified attribute should be case-insensitive" do
+      assert  ["member@example.ac.uk", "staff@example.ac.uk", "alum@example.ac.uk"] = Attributes.values(
+                @query_results,
+                "edupersonscopedaffiliation"
+              )
+      assert  ["member@example.ac.uk", "staff@example.ac.uk", "alum@example.ac.uk"] = Attributes.values(
+                @query_results,
+                "EDUPERSONSCOPEDAFFILIATION"
+              )
+    end
 
   end
 

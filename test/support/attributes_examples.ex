@@ -6,7 +6,7 @@ defmodule AttributesExamples do
     File.read!("test/support/attributes.json")
   end
 
-  def json_raw do
+  def basic_json do
     Jason.decode!(basic_raw())
   end
 
