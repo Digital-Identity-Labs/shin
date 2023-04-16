@@ -3,7 +3,7 @@
 # Shin Workbook
 
 ```elixir
-Mix.install([{:shin, ">= 0.1.0"}])
+Mix.install([{:shin, ">= 0.2.0"}])
 alias Shin.{Metadata, Attributes}
 ```
 
@@ -19,5 +19,43 @@ to the admin endpoints (by default this is done with an IP address allow-list)
 ## 2. Getting raw metrics information
 
 ```elixir
-metrics = Shin.metrics(idp)
+{:ok, metrics} = Shin.metrics(idp)
+```
+
+
+## Producing a simplified report
+
+```elixir
+
+{:ok, report} = Shin.report(idp, :system_info)
+IO.puts report.cores
+
+```
+
+## Triggering a service reload
+
+```elixir
+
+{:ok, message} = Shin.reload_service(idp, "shibboleth.AttributeFilterService")
+
+```
+
+## Listing a user's attribute data released to an SP
+
+```elixir
+{:ok, attr_data} = Shin.attributes(idp, "https://test.ukfederation.org.uk/entity", "pete")
+Shin.Attributes.values(attr_data, "eduPersonEntitlement")
+
+```
+
+## Viewing a simulated SAML2 assertion containing user attributes
+
+```elixir
+saml_assertion_xml = Shin.assertion!(idp, "https://test.ukfederation.org.uk/entity", "pete")
+```
+
+## Fetching an SP's metadata
+
+```elixir
+metadata_xml = Shin.metadata!(idp, "https://test.ukfederation.org.uk/entity")
 ```
