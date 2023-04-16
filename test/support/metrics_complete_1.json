@@ -44,7 +44,7 @@
       "value": 206
     },
     "net.shibboleth.idp.accesscontrol.reload.attempt": {
-      "value": "2022-06-22T20:57:20.121853Z"
+      "value": null
     },
     "net.shibboleth.idp.accesscontrol.reload.error": {
       "value": null
@@ -98,10 +98,10 @@
       "value": "2022-06-22T08:39:02.193975Z"
     },
     "net.shibboleth.idp.logging.reload.error": {
-      "value": null
+      "value": "2022-06-22T08:39:02.193975Z"
     },
     "net.shibboleth.idp.logging.reload.success": {
-      "value": "2022-06-22T08:39:02.193975Z"
+      "value": null
     },
     "net.shibboleth.idp.managedbean.reload.attempt": {
       "value": "2022-06-22T07:54:11.399721Z"
