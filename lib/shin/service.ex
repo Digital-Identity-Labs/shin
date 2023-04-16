@@ -5,6 +5,25 @@ defmodule Shin.Service do
   alias Shin.Metrics
   alias Shin.Utils
 
+  @moduledoc """
+  Queries and reloads sub-services at the IdP. Mostly it reloads subservices: things like logging, attribute filters, etc.
+  """
+
+  @doc """
+  Looks up information about the specified Shibboleth IdP sub-service, returning it in a results tuple.
+
+  At the moment the only useful information concerns when the service restarted (or failed to restart)
+
+  The service can be specified using the full Shibboleth service ID or a Shin service alias. These are listed in your
+    IdP struct.
+
+  ## Examples
+
+    ```
+    {:ok, info} = Shin.Service.query(idp, "shibboleth.AttributeRegistryService")
+    ```
+
+  """
   @spec query(idp :: IdP.t(), service :: binary() | atom(), options :: keyword()) :: {:ok, map()} | {:error, binary()}
   def query(idp, service, options \\ [])
   def query(idp, _, _) when is_binary(idp) do
@@ -34,11 +53,39 @@ defmodule Shin.Service do
 
   end
 
+  @doc """
+  Looks up information about the specified Shibboleth IdP sub-service.
+
+  At the moment the only useful information concerns when the service restarted (or failed to restart)
+
+  The service can be specified using the full Shibboleth service ID or a Shin service alias. These are listed in your
+    IdP struct.
+
+  ## Examples
+
+    ```
+    info = Shin.Service.query!(idp, "shibboleth.AttributeRegistryService")
+    ```
+
+  """
   @spec query!(idp :: IdP.t(), service :: binary() | atom(), options :: keyword()) :: map()
   def query!(idp, service, options \\ []) do
     Utils.wrap_results(query(idp, service, options))
   end
 
+  @doc """
+  Sends a reload request for the specified service to the IdP. This should cause the IdP to reload the configuration
+  for that service.
+
+  Pass an IdP as the first parameter. The second parameter is either a full service ID or an alias provided by Shin.
+
+  ## Examples
+
+    ```
+    {:ok, message} = Shin.Service.reload(idp, "shibboleth.MetadataResolverService")
+    {:ok, message} = Shin.Service.reload(idp, :metadata_resolver)
+    ```
+  """
   @spec reload(idp :: IdP.t(), service :: atom | binary, options :: keyword()) ::
           {:ok, binary} | {:error, binary}
   def reload(idp, service, options \\ [])
@@ -56,6 +103,19 @@ defmodule Shin.Service do
     end
   end
 
+  @doc """
+  Sends a reload request for the specified service to the IdP. This should cause the IdP to reload the configuration
+  for that service.
+
+  Pass an IdP as the first parameter. The second parameter is either a full service ID or an alias provided by Shin.
+
+  ## Examples
+
+    ```
+    message = Shin.Service.reload!(idp, "shibboleth.MetadataResolverService")
+    message = Shin.Service.reload!(idp, :metadata_resolver)
+    ```
+  """
   @spec reload!(idp :: IdP.t(), service :: atom | binary, options :: keyword()) :: binary
   def reload!(idp, service, options \\ [])
   def reload!(idp, _, _) when is_binary(idp) do
