@@ -1,8 +1,6 @@
 defmodule Shin.Lockout do
 
-  @moduledoc """
-  XXX
-  """
+  @moduledoc false
 
   alias Shin.HTTP
   alias Shin.Utils
@@ -27,5 +25,7 @@ defmodule Shin.Lockout do
     path = Utils.build_lockout_path(idp, username, ip_address, options)
     HTTP.del_data(idp, path, [], options)
   end
+
+  ####################################################################################################
 
 end

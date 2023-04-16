@@ -117,6 +117,8 @@ defmodule Shin.Reports do
     end
   end
 
+  ####################################################################################################
+
   @spec normalise_reporter(reporter :: atom()) :: {:ok, atom()} | {:error, binary()}
   defp normalise_reporter(reporter) when is_atom(reporter) do
     report_module = Map.get(@report_mods, reporter, nil)

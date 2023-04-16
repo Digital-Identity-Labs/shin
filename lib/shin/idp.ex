@@ -300,6 +300,8 @@ defmodule Shin.IdP do
     "#{idp.metrics_path}/#{group}"
   end
 
+  ####################################################################################################
+
   @spec validate_url(url :: binary, options :: list()) :: {:ok, binary} | {:error, binary}
   defp validate_url(url, options) do
     parsed_url = URI.parse(url)
