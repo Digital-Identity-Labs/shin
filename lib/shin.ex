@@ -222,7 +222,6 @@ defmodule Shin do
     end
   end
 
-
   def assertion(idp, sp, username, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Assertion.query(idp, sp, username, options)

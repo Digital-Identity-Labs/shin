@@ -5,7 +5,12 @@ defmodule Shin.Service do
   alias Shin.Metrics
   alias Shin.Utils
 
-  def query(idp, service, options \\ []) do
+  def query(idp, service, options \\ [])
+  def query(idp, _, _) when is_binary(idp) do
+    {:error, "IdP record is required"}
+  end
+
+  def query(idp, service, options) do
     with {:ok, service} <- IdP.validate_service(idp, service),
          {:ok, metrics} <- Metrics.query(idp) do
 
@@ -34,7 +39,12 @@ defmodule Shin.Service do
 
   @spec reload(idp :: IdP.t(), service :: atom | binary) ::
           {:ok, binary} | {:error, binary}
-  def reload(idp, service, options \\ []) do
+  def reload(idp, service, options \\ [])
+  def reload(idp, _, _) when is_binary(idp) do
+    {:error, "IdP record is required"}
+  end
+
+  def reload(idp, service, options) do
     with {:ok, service} <- IdP.validate_service(idp, service) do
       options = Keyword.merge(options, [type: :text])
       query_params = Utils.build_service_reload_query(idp, service, options)
@@ -45,7 +55,12 @@ defmodule Shin.Service do
   end
 
   @spec reload!(idp :: IdP.t(), service :: atom | binary) :: binary
-  def reload!(idp, service, options \\ []) do
+  def reload!(idp, service, options \\ [])
+  def reload!(idp, _, _) when is_binary(idp) do
+    raise "IdP record is required"
+  end
+
+  def reload!(idp, service, options) do
     options = Keyword.merge(options, [type: :text])
     query_params = Utils.build_service_reload_query(idp, service, options)
     case reload(idp, service, options) do
