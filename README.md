@@ -106,7 +106,7 @@ Shin.Attributes.values(attr_data, "eduPersonEntitlement")
 # => ["urn:mace:dir:entitlement:common-lib-terms"]
 Shin.Attributes.names(attr_data)
 #=> ["eduPersonEntitlement", "eduPersonPrincipalName", "eduPersonScopedAffiliation",
-"eduPersonUniqueID", "o"]
+# "eduPersonUniqueID", "o"]
 ```
 
 ### Viewing a simulated SAML2 assertion containing user attributes
