@@ -1,12 +1,11 @@
 defmodule Shin.Metrics do
 
   @moduledoc """
-    This module contains convenient functions for processing the metrics data returned from a Shibboleth IdP.
+    This module contains convenient functions for retrieving and processing the metrics data provided by a Shibboleth IdP.
   """
 
   alias Shin.HTTP
   alias Shin.IdP
-
 
   @doc """
   Returns default (all) raw metrics from the IdP as a map.
@@ -140,8 +139,7 @@ defmodule Shin.Metrics do
        )
     |> Enum.into(%{})
   end
-
-  @doc """
+  
   @doc """
   List the keys for all timers in the metrics.
 
