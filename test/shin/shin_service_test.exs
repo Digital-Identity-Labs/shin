@@ -486,7 +486,7 @@ defmodule ShinServiceTest do
       assert_raise RuntimeError, "IdP record is required", fn ->
         Service.reload!(idp_url, :frying_party_resolver)
       end
-      
+
     end
 
   end

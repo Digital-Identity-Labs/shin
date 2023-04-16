@@ -235,7 +235,6 @@ defmodule ShinMetadataTest do
                Metadata.reload(idp, "exMissingProvider")
     end
 
-
   end
 
   describe "cache/2" do

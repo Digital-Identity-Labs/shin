@@ -520,6 +520,525 @@ defmodule ShinTest do
 
   end
 
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+  describe "attributes/4" do
+
+    test "if passed an IdP, SP's entity ID, and username/principal, it returns appropriate attributes, etc as a map",
+         %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/resolvertest",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, AttributesExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port))
+
+      assert {:ok, %{"requester" => "https://test.ukfederation.org.uk/entity"}} = Shin.attributes(
+               idp,
+               "https://test.ukfederation.org.uk/entity",
+               "pete"
+             )
+
+    end
+
+    test "Is happy if passed a URL for the IdP",
+         %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/resolvertest",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, AttributesExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      url = idp_endpoint_url(bypass.port)
+
+      assert {:ok, %{"requester" => "https://test.ukfederation.org.uk/entity"}} = Shin.attributes(
+               url,
+               "https://test.ukfederation.org.uk/entity",
+               "pete"
+             )
+
+    end
+
+    test "the results include the target SP's entity ID",
+         %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/resolvertest",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, AttributesExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port))
+
+      assert {:ok, %{"requester" => "https://test.ukfederation.org.uk/entity"}} = Shin.attributes(
+               idp,
+               "https://test.ukfederation.org.uk/entity",
+               "pete"
+             )
+
+    end
+
+    test "the results include the username/principal",
+         %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/resolvertest",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, AttributesExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port))
+
+      assert {:ok, %{"principal" => "pete"}} = Shin.attributes(
+               idp,
+               "https://test.ukfederation.org.uk/entity",
+               "pete"
+             )
+
+    end
+
+    test "request needs to be using the resolvertest endpoint of the IdP, but with JSON media type",
+         %{bypass: bypass} do
+
+      ## Otherwise these tests aren't really testing much other than the mock
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/resolvertest",
+        fn conn ->
+
+          assert  is_nil(conn.query_params["saml2"])
+          assert ["application/json"] = Plug.Conn.get_req_header(conn, "accept")
+          assert %{
+                   "principal" => "pete",
+                   "requester" => "https://test.ukfederation.org.uk/entity",
+                 } = conn.query_params
+
+          Plug.Conn.resp(conn, 200, AttributesExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+      assert {:ok, %{"requester" => "https://test.ukfederation.org.uk/entity"}} = Shin.attributes(
+               idp,
+               "https://test.ukfederation.org.uk/entity",
+               "pete"
+             )
+    end
+  end
+
+  describe "assertion/4" do
+
+    test "if passed an IdP, SP's entity ID, and username, it returns appropriate attributes as a SAML assertion/binary string",
+         %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/resolvertest",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port))
+
+      assert {:ok, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><saml2:Assertion" <> _xml} = Shin.assertion(
+               idp,
+               "https://test.ukfederation.org.uk/entity",
+               "pete"
+             )
+
+    end
+
+    test "is happy to be passed a URL for the IdP", %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/resolvertest",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
+        end
+      )
+
+      url = idp_endpoint_url(bypass.port)
+
+      assert {:ok, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><saml2:Assertion" <> _xml} = Shin.assertion(
+               url,
+               "https://test.ukfederation.org.uk/entity",
+               "pete"
+             )
+    end
+
+    test "the SAML assertion is SAML2-compliant", %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/resolvertest",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port))
+
+      {:ok, assertion} = Shin.assertion(
+        idp,
+        "https://test.ukfederation.org.uk/entity",
+        "pete"
+      )
+
+      assert  "<?xml version=\"1.0\" encoding=\"UTF-8\"?><saml2:Assertion" <> _xml = assertion
+      assert  String.contains?(assertion, ~s|Version="2.0"|)
+    end
+
+    test "request needs to be using the resolvertest endpoint of the IdP, but with SAML2 option and media type",
+         %{bypass: bypass} do
+
+      ## Otherwise these tests aren't really testing much other than the mock
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/resolvertest",
+        fn conn ->
+
+          assert  "true" = conn.query_params["saml2"]
+          assert ["application/samlassertion+xml"] = Plug.Conn.get_req_header(conn, "accept")
+          assert %{
+                   "principal" => "pete",
+                   "requester" => "https://test.ukfederation.org.uk/entity",
+                   "saml2" => "true"
+                 } = conn.query_params
+
+          Plug.Conn.resp(conn, 200, AssertionExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlassertion+xml"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+      assert {:ok, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><saml2:Assertion" <> _xml} = Shin.assertion(
+               idp,
+               "https://test.ukfederation.org.uk/entity",
+               "pete"
+             )
+    end
+
+  end
+
+  describe "metadata/3" do
+
+    test "if passed an IdP and SP's entity ID it returns whatever metadata the IdP has for that SP",
+         %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/mdquery",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetadataExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlmetadata+xml"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port))
+
+      assert {:ok, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><EntityDescriptor" <> _xml} = Shin.metadata(
+               idp,
+               "https://test.ukfederation.org.uk/entity"
+             )
+
+    end
+
+    test "is fine with getting a URL for the IdP", %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/mdquery",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetadataExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlmetadata+xml"}])
+        end
+      )
+
+      url = idp_endpoint_url(bypass.port)
+
+      assert {:ok, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><EntityDescriptor" <> _xml} = Shin.metadata(
+               url,
+               "https://test.ukfederation.org.uk/entity"
+             )
+    end
+
+    test "the metadata appears to be a binary containing XML", %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/mdquery",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetadataExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlmetadata+xml"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port))
+
+      {:ok, assertion} = Shin.metadata(
+        idp,
+        "https://test.ukfederation.org.uk/entity"
+      )
+
+      assert  "<?xml version=\"1.0\" encoding=\"UTF-8\"?><EntityDescriptor" <> _xml = assertion
+      assert  String.contains?(assertion, ~s|entityID="https://test.ukfederation.org.uk/entity"|)
+    end
+
+    test "request specifies the correct media type, etc",
+         %{bypass: bypass} do
+
+      Bypass.expect(
+        bypass,
+        "GET",
+        "/idp/profile/admin/mdquery",
+        fn conn ->
+
+          assert ["application/samlmetadata+xml"] = Plug.Conn.get_req_header(conn, "accept")
+
+          assert %{"entityID" => "https://test.ukfederation.org.uk/entity"} = conn.query_params
+
+          Plug.Conn.resp(conn, 200, MetadataExamples.basic_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/samlmetadata+xml"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+      assert {:ok, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><EntityDescriptor" <> _xml} = Shin.metadata(
+               idp,
+               "https://test.ukfederation.org.uk/entity"
+             )
+    end
+  end
+
+  describe "reload_metadata/3" do
+
+    test "causes the specified metadata provider to reload, if it exists", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/reload-metadata",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, "Metadata reloaded for 'exOverride'\n")
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+      assert {:ok, "Metadata reloaded for 'exOverride'"} =
+               Shin.reload_metadata(idp, "exOverride")
+
+    end
+
+    test "returns an error if the metadata provider does not exist", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/reload-metadata",
+        fn conn ->
+          Plug.Conn.resp(conn, 404, "Not found\n")
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+      assert {:error, "Metadata reload failed for 'exMissingProvider'"} =
+               Shin.reload_metadata(idp, "exMissingProvider")
+    end
+
+    test "can accept an IdP as a simple URL binary", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/reload-metadata",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, "Metadata reloaded for 'exOverride'\n")
+        end
+      )
+
+      url = idp_endpoint_url(bypass.port)
+      assert {:ok, "Metadata reloaded for 'exOverride'"} =
+               Shin.reload_metadata(url, "exOverride")
+
+    end
+
+  end
+
+  describe "service/3" do
+
+    test "returns a summary of reload status for known services when passed a service ID", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {
+               :ok,
+               %{
+                 ok: true,
+                 reload_attempted_at: ~U[2022-06-22 07:54:10.438366Z],
+                 reload_failed_at: nil,
+                 reload_requested: true,
+                 reload_succeeded_at: ~U[2022-06-22 07:54:10.438366Z],
+                 service: "shibboleth.RelyingPartyResolverService"
+               }
+             } = Shin.service(idp, "shibboleth.RelyingPartyResolverService")
+    end
+
+    test "returns a summary of reload status for known services when passed a service alias", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {
+               :ok,
+               %{
+                 ok: true,
+                 reload_attempted_at: ~U[2022-06-22 07:54:10.438366Z],
+                 reload_failed_at: nil,
+                 reload_requested: true,
+                 reload_succeeded_at: ~U[2022-06-22 07:54:10.438366Z],
+                 service: "shibboleth.RelyingPartyResolverService"
+               }
+             } = Shin.service(idp, :relying_party_resolver)
+    end
+
+    test "returns an error tuple if the service is unknown for that IdP", %{bypass: bypass} do
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+      assert {:error, _} = Shin.service(idp, :frying_party_resolver)
+    end
+
+    test "doesn't mind if the IdP is a string, not a struct", %{bypass: bypass} do
+
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      url = idp_endpoint_url(bypass.port)
+      assert {:ok, _} = Shin.service(url, :relying_party_resolver)
+    end
+
+    test "the results show ok: true for services that have never been asked to reload", %{bypass: bypass} do
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:ok, %{ok: true}} = Shin.service(idp, "shibboleth.ReloadableAccessControlService")
+    end
+
+    test "the results show ok: true for services that have reloaded successfully at most recent reload request",
+         %{bypass: bypass} do
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {
+               :ok,
+               %{
+                 ok: true,
+                 reload_attempted_at: ~U[2022-06-22 07:54:10.438366Z],
+                 reload_failed_at: nil,
+                 reload_requested: true,
+                 reload_succeeded_at: ~U[2022-06-22 07:54:10.438366Z],
+                 service: "shibboleth.RelyingPartyResolverService"
+               }
+             } = Shin.service(idp, "shibboleth.RelyingPartyResolverService")
+    end
+
+    test "the results show ok: false for services that have reloaded unsuccessfully at most recent  reload request",
+         %{bypass: bypass} do
+      Bypass.expect_once(
+        bypass,
+        "GET",
+        "/idp/profile/admin/metrics",
+        fn conn ->
+          Plug.Conn.resp(conn, 200, MetricsExamples.complete_raw())
+          |> Plug.Conn.merge_resp_headers([{"content-type", "application/json"}])
+        end
+      )
+
+      {:ok, idp} = Shin.idp(idp_endpoint_url(bypass.port), retries: 0)
+
+      assert {:ok, %{ok: false}} = Shin.service(idp, "shibboleth.LoggingService")
+
+    end
+  end
+
+
   defp idp_endpoint_url(port), do: "http://localhost:#{port}/idp"
 
 end
