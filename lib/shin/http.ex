@@ -6,7 +6,7 @@ defmodule Shin.HTTP do
   alias Shin.HTTP
   alias Shin.Utils
 
-  @spec get_data(idp :: IdP.t(), path :: binary, options :: keyword()) :: {:ok, map} | {:error, binary}
+  @spec get_data(idp :: IdP.t(), path :: binary, options :: keyword()) :: {:ok, map() | binary()} | {:error, binary}
   def get_data(idp, path, params \\ [], options \\ []) do
 
     results = Req.get(client(idp, options), url: path, params: params)
@@ -22,6 +22,7 @@ defmodule Shin.HTTP do
 
   end
 
+  @spec post_data(idp :: IdP.t(), path :: binary, options :: keyword()) :: {:ok, map() | binary()} | {:error, binary}
   def post_data(idp, path, params \\ [], options \\ []) do
 
 
@@ -42,6 +43,7 @@ defmodule Shin.HTTP do
 
   end
 
+  @spec del_data(idp :: IdP.t(), path :: binary, options :: keyword()) :: {:ok, map() | binary()} | {:error, binary}
   def del_data(idp, path, params \\ [], options \\ []) do
 
     results = Req.delete(client(idp, options), url: path, params: params)
@@ -56,8 +58,10 @@ defmodule Shin.HTTP do
     end
 
   end
+
   ####################################################################################################
 
+  @spec client(idp :: IdP.t(), options :: keyword()) :: struct()
   defp client(idp, options \\ [])
   defp client(idp, options) when is_struct(idp) do
 
@@ -76,6 +80,7 @@ defmodule Shin.HTTP do
     raise "Shin.HTTP client requires a Shin.IdP struct as the first parameter!"
   end
 
+  @spec tidy_data(data :: binary() | map()) :: binary() | map()
   defp tidy_data(data) when is_binary(data) do
     data
     |> String.trim()
@@ -85,10 +90,12 @@ defmodule Shin.HTTP do
     data
   end
 
+  @spec http_agent_name() :: binary()
   defp http_agent_name do
     Shin.Utils.named_version()
   end
 
+  @spec http_type(type :: atom() | binary()) :: binary()
   defp http_type(type) when is_binary(type) do
     type
     |> String.to_existing_atom()
