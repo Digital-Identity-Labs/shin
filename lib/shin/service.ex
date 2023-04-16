@@ -5,6 +5,7 @@ defmodule Shin.Service do
   alias Shin.Metrics
   alias Shin.Utils
 
+  @spec query(idp :: IdP.t(), service :: binary() | atom(), options :: keyword()) :: {:ok, map()} | {:error, binary()}
   def query(idp, service, options \\ [])
   def query(idp, _, _) when is_binary(idp) do
     {:error, "IdP record is required"}
@@ -33,11 +34,12 @@ defmodule Shin.Service do
 
   end
 
+  @spec query!(idp :: IdP.t(), service :: binary() | atom(), options :: keyword()) :: map()
   def query!(idp, service, options \\ []) do
     Utils.wrap_results(query(idp, service, options))
   end
 
-  @spec reload(idp :: IdP.t(), service :: atom | binary) ::
+  @spec reload(idp :: IdP.t(), service :: atom | binary, options :: keyword()) ::
           {:ok, binary} | {:error, binary}
   def reload(idp, service, options \\ [])
   def reload(idp, _, _) when is_binary(idp) do
@@ -54,7 +56,7 @@ defmodule Shin.Service do
     end
   end
 
-  @spec reload!(idp :: IdP.t(), service :: atom | binary) :: binary
+  @spec reload!(idp :: IdP.t(), service :: atom | binary, options :: keyword()) :: binary
   def reload!(idp, service, options \\ [])
   def reload!(idp, _, _) when is_binary(idp) do
     raise "IdP record is required"
@@ -75,6 +77,7 @@ defmodule Shin.Service do
 
   ####################################################################################################
 
+  @spec service_to_metric_id(service :: binary()) :: binary()
   defp service_to_metric_id(service) do
     case service do
       "shibboleth.RelyingPartyResolverService" -> "relyingparty"
@@ -91,6 +94,7 @@ defmodule Shin.Service do
     end
   end
 
+  @spec report_for_service(metrics :: map(), service :: binary()) :: map()
   defp report_for_service(metrics, service) do
     id = service_to_metric_id(service)
     mapper = %{
@@ -113,10 +117,12 @@ defmodule Shin.Service do
 
   end
 
+  @spec reload_requested?(report :: map()) :: boolean()
   defp reload_requested?(report) do
     !is_nil(report[:reload_attempt_at])
   end
 
+  @spec ok?(report :: map()) :: boolean()
   defp ok?(report) do
     cond do
       is_nil(report[:reload_attempt_at]) -> true

@@ -2,10 +2,15 @@ defmodule Shin.Assertion do
 
   @moduledoc false
 
+  alias Shin.IdP
   alias Shin.HTTP
   alias Shin.Utils
 
-  def query(idp, _sp, _username, options \\ [])
+  @spec query(idp :: IdP.t(), sp :: binary(), username :: binary(), options :: keyword()) :: {:ok, binary()} | {
+    :error,
+    binary()
+  }
+  def query(idp, sp, username, options \\ [])
   def query(idp, _, _, _) when is_binary(idp) do
     {:error, "IdP record is required"}
   end
@@ -16,6 +21,7 @@ defmodule Shin.Assertion do
     HTTP.get_data(idp, idp.attributes_path, query_params, options)
   end
 
+  @spec query!(idp :: IdP.t(), sp :: binary(), username :: binary(), options :: keyword()) :: binary()
   def query!(idp, sp, username, options \\ [])
   def query!(idp, _, _, _) when is_binary(idp) do
     raise "IdP record is required"

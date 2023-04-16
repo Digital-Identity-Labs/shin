@@ -118,7 +118,7 @@ defmodule Shin do
     {:ok, message} = Shin.reload_service("https://example.com/idp", :metadata_resolver)
     ```
   """
-  @spec reload_service(idp :: binary | IdP.t(), service :: atom | binary) ::
+  @spec reload_service(idp :: binary | IdP.t(), service :: atom | binary, options :: keyword) ::
           {:ok, binary} | {:error, binary}
   def reload_service(idp, service, options \\ []) do
     with {:ok, idp} <- prep_idp(idp),
@@ -214,6 +214,7 @@ defmodule Shin do
 
   ####
 
+  @spec attributes(idp :: binary | IdP.t(), sp :: binary(), username :: binary(), options :: keyword()) :: {:ok, map()} | {:error, binary}
   def attributes(idp, sp, username, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Attributes.query(idp, sp, username, options)
@@ -222,6 +223,7 @@ defmodule Shin do
     end
   end
 
+  @spec assertion(idp :: binary | IdP.t(), sp :: binary(), username :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary}
   def assertion(idp, sp, username, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Assertion.query(idp, sp, username, options)
@@ -230,6 +232,7 @@ defmodule Shin do
     end
   end
 
+  @spec metadata(idp :: binary | IdP.t(), entity_id :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary}
   def metadata(idp, entity_id, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Metadata.query(idp, entity_id, options)
@@ -238,6 +241,7 @@ defmodule Shin do
     end
   end
 
+  @spec reload_metadata(idp :: binary | IdP.t(), mdp_id :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary}
   def reload_metadata(idp, mdp_id, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Metadata.reload(idp, mdp_id, options)
@@ -246,6 +250,7 @@ defmodule Shin do
     end
   end
 
+  @spec service(idp :: binary | IdP.t(), service :: binary(), options :: keyword()) :: {:ok, map()} | {:error, binary}
   def service(idp, service, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Service.query(idp, service, options)
