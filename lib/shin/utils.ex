@@ -40,6 +40,15 @@ defmodule Shin.Utils do
     query = [id: service]
   end
 
+  def guess_service_metric_id(service) do
+    service
+    |> String.replace_leading("shibboleth.", "")
+    |> String.replace("Service", "")
+    |> String.replace("Reloadable", "")
+    |> Macro.underscore()
+    |> String.replace("_", ".")
+  end
+
   ####################################################################################################
 
 

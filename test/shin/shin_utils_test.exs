@@ -119,6 +119,19 @@ defmodule ShinUtilsTest do
     end
   end
 
+  describe "guess_service_metric_id/1" do
+
+    test "converts full service ID into a format that matches *some* of the defaults (they are not consistent)" do
+
+      assert "attribute.resolver" = Utils.guess_service_metric_id("shibboleth.AttributeResolverService")
+      assert "logging" = Utils.guess_service_metric_id("shibboleth.LoggingService")
+      assert "random" = Utils.guess_service_metric_id("shibboleth.RandomService")
+      ## Not sure about this
+
+    end
+
+  end
+
   defp idp_endpoint_url(port), do: "http://localhost:#{port}/idp"
 
 end
