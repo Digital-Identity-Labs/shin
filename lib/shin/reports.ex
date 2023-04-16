@@ -3,6 +3,8 @@ defmodule Shin.Reports do
   @moduledoc """
     This module contains functions for converting the metrics data returned from a Shibboleth IdP into
     simplified maps of data.
+
+    Use `Shin.metrics/1` or `Shin.Metrics.query/1` to get the metrics data.
   """
 
   @report_mods %{

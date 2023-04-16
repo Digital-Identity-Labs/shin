@@ -139,7 +139,7 @@ defmodule Shin.Metrics do
        )
     |> Enum.into(%{})
   end
-  
+
   @doc """
   List the keys for all timers in the metrics.
 
