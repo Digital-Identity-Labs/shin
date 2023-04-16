@@ -1,19 +1,35 @@
 defmodule Shin.Service do
 
-  @moduledoc false
-
   alias Shin.IdP
   alias Shin.HTTP
+  alias Shin.Metrics
   alias Shin.Utils
 
-  def query(idp, sp, username, options \\ []) do
-    query_params = Keyword.merge(Utils.build_attribute_query(idp, sp, username, options), [saml2: true])
-    options = Keyword.merge(options, [type: :saml2])
-    HTTP.get_data(idp, idp.attributes_path, query_params, options)
+  def query(idp, service, options \\ []) do
+    with {:ok, service} <- IdP.validate_service(idp, service),
+         {:ok, metrics} <- Metrics.query(idp) do
+
+      report = report_for_service(metrics, service)
+
+      results = %{
+        service: service,
+        ok: ok?(report),
+        reload_requested: reload_requested?(report),
+        reload_attempted_at: report[:reload_attempt_at],
+        reload_succeeded_at: report[:reload_success_at],
+        reload_failed_at: report[:reload_error_at]
+      }
+
+      {:ok, results}
+
+    else
+      err -> err
+    end
+
   end
 
-  def query!(idp, sp, username, options \\ []) do
-    Utils.wrap_results(query(idp, sp, username, options))
+  def query!(idp, service, options \\ []) do
+    Utils.wrap_results(query(idp, service, options))
   end
 
   @spec reload(idp :: IdP.t(), service :: atom | binary) ::
@@ -44,5 +60,54 @@ defmodule Shin.Service do
 
   ####################################################################################################
 
+  defp service_to_metric_id(service) do
+    case service do
+      "shibboleth.RelyingPartyResolverService" -> "relyingparty"
+      "shibboleth.MetadataResolverService" -> "metadata"
+      "shibboleth.AttributeRegistryService" -> "attribute.registry"
+      "shibboleth.AttributeResolverService" -> "attribute.resolver"
+      "shibboleth.AttributeFilterService" -> "attribute.filter"
+      "shibboleth.NameIdentifierGenerationService" -> "nameid"
+      "shibboleth.ReloadableAccessControlService" -> "accesscontrol"
+      "shibboleth.ReloadableCASServiceRegistry" -> "cas.registry"
+      "shibboleth.ManagedBeanService" -> "managedbean"
+      "shibboleth.LoggingService" -> "logging"
+      _ -> Utils.guess_service_metric_id(service)
+    end
+  end
+
+  defp report_for_service(metrics, service) do
+    id = service_to_metric_id(service)
+    mapper = %{
+      reload_attempt_at: "net.shibboleth.idp.#{id}.reload.attempt",
+      reload_success_at: "net.shibboleth.idp.#{id}.reload.success",
+      reload_error_at: "net.shibboleth.idp.#{id}.reload.error",
+    }
+
+    Metrics.map_gauges(metrics, mapper)
+    |> Enum.map(
+         fn {k, v} -> if is_binary(v) do
+                        {:ok, dv, _} = DateTime.from_iso8601(v)
+                        {k, dv}
+                      else
+                        {k, v}
+                      end
+         end
+       )
+    |> Map.new()
+
+  end
+
+  defp reload_requested?(report) do
+    !is_nil(report[:reload_attempt_at])
+  end
+
+  defp ok?(report) do
+    cond do
+      is_nil(report[:reload_attempt_at]) -> true
+      report[:reload_attempt_at] && is_nil(report[:reload_success_at]) -> false
+      DateTime.compare(report[:reload_attempt_at], report[:reload_success_at]) == :eq -> true
+    end
+  end
 
 end
