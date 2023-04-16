@@ -1,13 +1,15 @@
 # Shin
 
 `Shin` is a simple Elixir client for the [Shibboleth IdP's](https://www.shibboleth.net/products/) admin features.
-Currently it can collect metrics and trigger service reloads.
+Currently it can collect metrics and trigger service reloads, fetch metadata and show released user attributes.
 
 Shin can be used to gather information about your IdP servers such as Java version and IdP version, and can also collect any
 other information defined as a metric within the IdP. Shin can return the raw data or reformat it into simpler reports.
 
 The Shibboleth IdP will automatically reload valid configuration files but may stop retrying if passed an incorrect file. 
 Shin can be used to prompt the IdP to immediately reload parts of its configuration.
+
+Shin can also fetch entity metadata via the IdP and lookup user attribute information for specified SPs.
 
 [![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2FDigital-Identity-Labs%2Fshin%2Fmain%2Fshin_notebook.livemd)
 
@@ -82,7 +84,7 @@ hostname = Shin.Metrics.gauge(metrics, "host.name")
 {:ok, report} = Shin.report(idp, :system_info)
 
 report.cores
-=> 4
+#=> 4
 
 ```
 
@@ -96,6 +98,29 @@ report.cores
 
 ```
 
+### Listing a user's attribute data released to an SP
+
+```elixir
+{:ok, attr_data} = Shin.attributes(idp, "https://test.ukfederation.org.uk/entity", "pete")
+Shin.Attributes.values(attr_data, "eduPersonEntitlement")
+# => ["urn:mace:dir:entitlement:common-lib-terms"]
+Shin.Attributes.names(attr_data)
+#=> ["eduPersonEntitlement", "eduPersonPrincipalName", "eduPersonScopedAffiliation",
+"eduPersonUniqueID", "o"]
+```
+
+### Viewing a simulated SAML2 assertion containing user attributes
+
+```elixir
+saml_assertion_xml = Shin.assertion!(idp, "https://test.ukfederation.org.uk/entity", "pete")
+```
+
+### Fetching an SP's metadata
+
+```elixir
+metadata_xml = Shin.metadata!(idp, "https://test.ukfederation.org.uk/entity")
+```
+
 ## Example Script
 
 This script outputs a small table showing the Java version used by each IdP
@@ -105,7 +130,7 @@ This script outputs a small table showing the Java version used by each IdP
 
 Mix.install(
   [
-    {:shin, "~> 0.1"},
+    {:shin, "~> 0.2"},
     {:table_rex, "~> 3.1.1"}
   ]
 )
