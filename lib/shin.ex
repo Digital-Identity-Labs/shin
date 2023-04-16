@@ -246,6 +246,14 @@ defmodule Shin do
     end
   end
 
+  def service(idp, service, options \\ []) do
+    with {:ok, idp} <- prep_idp(idp) do
+      Service.query(idp, service, options)
+    else
+      err -> err
+    end
+  end
+
   ####################################################################################################
 
   @spec prep_idp(idp :: binary | IdP.t()) :: {:ok, struct()} | {:error, binary}
