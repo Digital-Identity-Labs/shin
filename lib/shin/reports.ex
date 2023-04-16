@@ -6,6 +6,7 @@ defmodule Shin.Reports do
   """
 
   @report_mods %{
+    services_info: Shin.Reports.ServicesInfo,
     system_info: Shin.Reports.SystemInfo,
     idp_info: Shin.Reports.IdPInfo
   }
