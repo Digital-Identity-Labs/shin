@@ -12,7 +12,9 @@ defmodule Shin do
   ## Overview
 
   The `Shin` module contains a few useful functions that are probably enough for most tasks. The `Shin.Metrics` and
-  `Shin.Reports` modules provide extra functions for handling the returned metrics.
+  `Shin.Reports` modules provide extra functions for handling the returned metrics. `Shin.Attributes` and
+  `Shin.Assertion` give access to *predictions* of attribute data as released to SPs. The `Shin.Metadata` module has functions for
+  querying metadata and resetting metadata providers. `Shin.Service` gives more information about sub-service status.
 
   ### Defining an IdP target
 
@@ -45,7 +47,7 @@ defmodule Shin do
 
   Functions in the top-level Shin module can also be passed a base URL if no configuration is needed.
 
-  ### Downloading raw metrics
+### Downloading raw metrics
 
   ```
   {:ok, metrics} = Shin.metrics(idp)
@@ -54,7 +56,7 @@ defmodule Shin do
   hostname = Shin.Metrics.gauge(metrics, "host.name")
   ```
 
-  ### Producing a simplified report
+### Producing a simplified report
 
   ```
   {:ok, report} = Shin.report(idp, :system_info)
@@ -62,14 +64,25 @@ defmodule Shin do
   # => 4
   ```
 
-  ### Triggering a service reload
+### Triggering a service reload
 
   ```
   {:ok, message} = Shin.reload_service(idp, "shibboleth.AttributeFilterService")
   {:ok, message} = Shin.reload_service(idp, :attribute_filter)
   ```
 
-  """
+### Listing attribute data released to an SP
+
+  ```
+  {:ok, attr_data} = Shin.attributes(idp, "https://test.ukfederation.org.uk/entity", "pete")
+  Shin.Attributes.values(attr_data, "eduPersonEntitlement")
+  => ["urn:mace:dir:entitlement:common-lib-terms"]
+  Shin.Attributes.names(attr_data)
+  => ["eduPersonEntitlement", "eduPersonPrincipalName", "eduPersonScopedAffiliation",
+  "eduPersonUniqueID", "o"]
+  ```
+
+ """
 
   alias Shin.IdP
   alias Shin.Metrics
@@ -214,7 +227,31 @@ defmodule Shin do
 
   ####
 
-  @spec attributes(idp :: binary | IdP.t(), sp :: binary(), username :: binary(), options :: keyword()) :: {:ok, map()} | {:error, binary}
+  @doc """
+  Looks up attributes likely to be released to the specified SP for the specified user, returning them as a map in a result
+  tuple.
+
+  Functions in the `Shin.Attributes` module act as getters to retrieve information from the map.
+
+  If your IdP is using another IdP as a proxy then any attributes derived from the upstream IdP will be missing: only
+    attributes sourced or created by the Shibboleth IdP can be returned.
+
+  Pass the IdP, followed by the SP's entity ID and the username/principal of the user.
+
+  ## Examples
+
+    ```
+    {:ok, attribute_data} = Shin.attributes(idp, "https://test.ukfederation.org.uk/entity", "pete")
+    ```
+
+  """
+  @spec attributes(idp :: binary | IdP.t(), sp :: binary(), username :: binary(), options :: keyword()) :: {
+                                                                                                             :ok,
+                                                                                                             map()
+                                                                                                           } | {
+                                                                                                             :error,
+                                                                                                             binary
+                                                                                                           }
   def attributes(idp, sp, username, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Attributes.query(idp, sp, username, options)
@@ -223,7 +260,32 @@ defmodule Shin do
     end
   end
 
-  @spec assertion(idp :: binary | IdP.t(), sp :: binary(), username :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary}
+  @doc """
+  Looks up attributes likely to be released to the specified SP for the specified user, returning them as an XML text
+  in a result tuple.
+
+  The assertion is not validated or parsed in any way. It should accurately reflect the assertion and attributes released
+  by the IdP.
+
+  If your IdP is using another IdP as a proxy then any attributes derived from the upstream IdP will be missing: only
+    attributes sourced or created by the Shibboleth IdP can be returned.
+
+  Pass the IdP, followed by the SP's entity ID and the username/principal of the user.
+
+  ## Examples
+
+    ```
+    {:ok, assertion_xml} = Shin.assertion(idp, "https://test.ukfederation.org.uk/entity", "pete")
+    ```
+
+  """
+  @spec assertion(idp :: binary | IdP.t(), sp :: binary(), username :: binary(), options :: keyword()) :: {
+                                                                                                            :ok,
+                                                                                                            binary()
+                                                                                                          } | {
+                                                                                                            :error,
+                                                                                                            binary
+                                                                                                          }
   def assertion(idp, sp, username, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Assertion.query(idp, sp, username, options)
@@ -232,7 +294,27 @@ defmodule Shin do
     end
   end
 
-  @spec metadata(idp :: binary | IdP.t(), entity_id :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary}
+  @doc """
+  Looks up metadata for the specified SP, returning metadata XML as a string.
+
+  Metadata is looked up using the IdP's metadata providers, using each one in turn until metadata is found.
+
+  The metadata XML is not parsed or validated in any way. If you need that sort of thing please take a look at the
+    [Smee](https://hexdocs.pm/smee/readme.html) library.
+
+  Pass the IdP and the entity ID of the SP.
+
+  ## Examples
+
+    ```
+    {:ok, metadata_xml} = Shin.metadata(idp, "https://test.ukfederation.org.uk/entity")
+    ```
+
+  """
+  @spec metadata(idp :: binary | IdP.t(), entity_id :: binary(), options :: keyword()) :: {:ok, binary()} | {
+    :error,
+    binary
+  }
   def metadata(idp, entity_id, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Metadata.query(idp, entity_id, options)
@@ -241,7 +323,24 @@ defmodule Shin do
     end
   end
 
-  @spec reload_metadata(idp :: binary | IdP.t(), mdp_id :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary}
+  @doc """
+  Sends a reload request for the specified metadata provider to the IdP. This should cause the IdP to reset and reload
+    the metadata associated with that provider.
+
+  Pass an IdP as the first parameter. The second parameter must be the provider name. You can list active providers with
+    `Shin.Metadata.providers/1`
+
+  ## Examples
+
+    ```
+    {:ok, _} = Shin.reload_metadata(idp, "ukFederationMDQ")
+    ```
+
+  """
+  @spec reload_metadata(idp :: binary | IdP.t(), mdp_id :: binary(), options :: keyword()) :: {:ok, binary()} | {
+    :error,
+    binary
+  }
   def reload_metadata(idp, mdp_id, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
       Metadata.reload(idp, mdp_id, options)
@@ -250,6 +349,22 @@ defmodule Shin do
     end
   end
 
+  @doc """
+  Looks up information about the specified Shibboleth IdP subservice - things like the logging subsystem, or attribute
+    filters.
+
+  At the moment the only useful information concerns when the service restarted (or failed to restart)
+
+  The service can be specified using the full Shibboleth service ID or a Shin service alias. These are listed in your
+    IdP struct.
+
+  ## Examples
+
+    ```
+    {:ok, info} = Shin.service(idp, "shibboleth.AttributeRegistryService")
+    ```
+
+  """
   @spec service(idp :: binary | IdP.t(), service :: binary(), options :: keyword()) :: {:ok, map()} | {:error, binary}
   def service(idp, service, options \\ []) do
     with {:ok, idp} <- prep_idp(idp) do
