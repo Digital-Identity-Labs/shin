@@ -1,7 +1,7 @@
 defmodule ShinAttributesTest do
   use ExUnit.Case
 
-  alias Shin.IdP
+  #alias Shin.IdP
   alias Shin.Attributes
 
   @query_results AttributesExamples.basic_json()

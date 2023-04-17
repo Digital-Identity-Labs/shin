@@ -1,7 +1,7 @@
 defmodule ShinUtilsTest do
   use ExUnit.Case
 
-  alias Shin.IdP
+  #alias Shin.IdP
   alias Shin.Utils
 
   setup do

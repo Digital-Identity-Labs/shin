@@ -1,7 +1,7 @@
 defmodule ShinMetadataTest do
   use ExUnit.Case
 
-  alias Shin.IdP
+  #alias Shin.IdP
   alias Shin.Metadata
 
   setup do

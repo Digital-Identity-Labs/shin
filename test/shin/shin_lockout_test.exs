@@ -1,8 +1,8 @@
 defmodule ShinLockoutTest do
   use ExUnit.Case
 
-  alias Shin.IdP
-  alias Shin.Lockout
+  #alias Shin.IdP
+  #alias Shin.Lockout
 
   ## This feature is not officially available yet and is UNTESTED.
   ##

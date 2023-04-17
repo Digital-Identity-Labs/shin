@@ -1,7 +1,7 @@
 defmodule ShinAssertionTest do
   use ExUnit.Case
 
-  alias Shin.IdP
+  #alias Shin.IdP
   alias Shin.Assertion
 
   setup do

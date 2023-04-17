@@ -1,10 +1,10 @@
 defmodule ShinServiceTest do
   use ExUnit.Case
 
-  alias Shin.IdP
+  #alias Shin.IdP
   alias Shin.Service
 
-  @big_metrics MetricsExamples.complete_parsed()
+  #@big_metrics MetricsExamples.complete_parsed()
 
   setup do
     bypass = Bypass.open()
