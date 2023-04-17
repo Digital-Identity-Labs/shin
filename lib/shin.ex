@@ -47,7 +47,7 @@ defmodule Shin do
 
   Functions in the top-level Shin module can also be passed a base URL if no configuration is needed.
 
-### Downloading raw metrics
+ ### Downloading raw metrics
 
   ```
   {:ok, metrics} = Shin.metrics(idp)
@@ -56,7 +56,7 @@ defmodule Shin do
   hostname = Shin.Metrics.gauge(metrics, "host.name")
   ```
 
-### Producing a simplified report
+ ### Producing a simplified report
 
   ```
   {:ok, report} = Shin.report(idp, :system_info)
@@ -64,14 +64,14 @@ defmodule Shin do
   # => 4
   ```
 
-### Triggering a service reload
+ ### Triggering a service reload
 
   ```
   {:ok, message} = Shin.reload_service(idp, "shibboleth.AttributeFilterService")
   {:ok, message} = Shin.reload_service(idp, :attribute_filter)
   ```
 
-### Listing attribute data released to an SP
+ ### Listing attribute data released to an SP
 
   ```
   {:ok, attr_data} = Shin.attributes(idp, "https://test.ukfederation.org.uk/entity", "pete")
@@ -90,7 +90,7 @@ defmodule Shin do
   alias Shin.Assertion
   alias Shin.Attributes
   alias Shin.Metadata
-  alias Shin.Lockout
+  #alias Shin.Lockout
   alias Shin.Reports
 
   @doc """
@@ -133,7 +133,7 @@ defmodule Shin do
   """
   @spec reload_service(idp :: binary | IdP.t(), service :: atom | binary, options :: keyword) ::
           {:ok, binary} | {:error, binary}
-  def reload_service(idp, service, options \\ []) do
+  def reload_service(idp, service, _options \\ []) do
     with {:ok, idp} <- prep_idp(idp),
          {:ok, service} <- IdP.validate_service(idp, service) do
       Service.reload(idp, service)

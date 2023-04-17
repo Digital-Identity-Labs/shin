@@ -133,7 +133,7 @@ defmodule Shin.IdP do
 
   """
   @spec metric_groups(idp :: IdP.t()) :: list()
-  def metric_groups(%IdP{metric_groups: values} = idp) when is_nil(values) do
+  def metric_groups(%IdP{metric_groups: values}) when is_nil(values) do
     []
   end
 
@@ -153,7 +153,7 @@ defmodule Shin.IdP do
 
   """
   @spec service_ids(idp :: IdP.t()) :: list()
-  def service_ids(%IdP{reloadable_services: values} = idp) when is_nil(values) do
+  def service_ids(%IdP{reloadable_services: values}) when is_nil(values) do
     []
   end
 
@@ -175,7 +175,7 @@ defmodule Shin.IdP do
 
   """
   @spec service_aliases(idp :: IdP.t()) :: list()
-  def service_aliases(%IdP{reloadable_services: values} = idp) when is_nil(values) do
+  def service_aliases(%IdP{reloadable_services: values}) when is_nil(values) do
     []
   end
 

@@ -30,7 +30,7 @@ defmodule Shin.Service do
     {:error, "IdP record is required"}
   end
 
-  def query(idp, service, options) do
+  def query(idp, service, _options) do
     with {:ok, service} <- IdP.validate_service(idp, service),
          {:ok, metrics} <- Metrics.query(idp) do
 
@@ -124,7 +124,7 @@ defmodule Shin.Service do
 
   def reload!(idp, service, options) do
     options = Keyword.merge(options, [type: :text])
-    query_params = Utils.build_service_reload_query(idp, service, options)
+    _query_params = Utils.build_service_reload_query(idp, service, options) # Remove
     case reload(idp, service, options) do
       {:ok, message} -> if String.contains?(message, "Configuration reloaded for") do
                           message

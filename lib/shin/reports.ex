@@ -136,7 +136,7 @@ defmodule Shin.Reports do
   end
 
   @spec check_metrics(metrics :: map(), reporter :: atom()) :: {:ok, map()} | {:error, binary}
-  defp check_metrics(metrics, reporter) do
+  defp check_metrics(metrics, _reporter) do
     {:ok, metrics}
   end
 

@@ -18,31 +18,31 @@ defmodule Shin.Utils do
   end
 
   @spec build_attribute_query(idp :: IdP.t(), sp :: binary(), username :: binary(), options :: keyword()) :: keyword()
-  def build_attribute_query(idp, sp, username, options) do
+  def build_attribute_query(_idp, sp, username, options) do
     query = [requester: sp, principal: username]
-    query = if is_nil(options[:acs_index]), do: query, else: Keyword.merge(query, [acsIndex: "#{options[:acs_index]}"])
+    if is_nil(options[:acs_index]), do: query, else: Keyword.merge(query, [acsIndex: "#{options[:acs_index]}"])
   end
 
   @spec build_mdq_query(idp :: binary | IdP.t(), entity_id :: binary(), options :: keyword() ) :: keyword()
-  def build_mdq_query(idp, entity_id, options) do
+  def build_mdq_query(_idp, entity_id, options) do
     query = [entityID: entity_id]
-    query = if is_nil(options[:protocol]), do: query, else: Keyword.merge(query, [protocol: "#{options[:protocol]}"])
+    if is_nil(options[:protocol]), do: query, else: Keyword.merge(query, [protocol: "#{options[:protocol]}"])
   end
 
   @spec build_mdr_query(idp :: binary | IdP.t(), mdp_id :: binary(), options :: keyword()) :: keyword()
-  def build_mdr_query(idp, mdp_id, options) do
-    query = [id: mdp_id]
+  def build_mdr_query(_idp, mdp_id, _options) do
+    [id: mdp_id]
   end
 
   @spec build_lockout_path(idp :: binary | IdP.t(), username :: binary(), ip_address :: binary, options :: keyword()) :: binary()
-  def build_lockout_path(idp, username, ip_address, options) do
+  def build_lockout_path(idp, username, ip_address, _options) do
     [idp.lockout_path, idp.lockout_bean, "#{username}!#{ip_address}"]
     |> Enum.join("/")
   end
 
   @spec build_service_reload_query(idp :: binary | IdP.t(), service :: atom() | binary(), options :: keyword()) :: keyword()
-  def build_service_reload_query(idp, service, options) do
-    query = [id: service]
+  def build_service_reload_query(_idp, service, _options) do
+    [id: service]
   end
 
   @spec guess_service_metric_id(service :: binary) :: binary()

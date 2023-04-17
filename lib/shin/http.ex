@@ -3,7 +3,6 @@ defmodule Shin.HTTP do
   @moduledoc false
 
   alias Shin.IdP
-  alias Shin.HTTP
   alias Shin.Utils
 
   @spec get_data(idp :: IdP.t(), path :: binary, options :: keyword()) :: {:ok, map() | binary()} | {:error, binary}
@@ -62,7 +61,7 @@ defmodule Shin.HTTP do
   ####################################################################################################
 
   @spec client(idp :: IdP.t(), options :: keyword()) :: struct()
-  defp client(idp, options \\ [])
+  defp client(idp, options \\ [type: nil])
   defp client(idp, options) when is_struct(idp) do
 
     Req.new(
@@ -92,7 +91,7 @@ defmodule Shin.HTTP do
 
   @spec http_agent_name() :: binary()
   defp http_agent_name do
-    Shin.Utils.named_version()
+    Utils.named_version()
   end
 
   @spec http_type(type :: atom() | binary()) :: binary()

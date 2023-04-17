@@ -42,7 +42,7 @@ defmodule Shin.Metrics do
   """
   @spec query(idp :: IdP.t(), group :: atom | binary) ::
           {:ok, map()} | {:error, binary}
-  def query(idp, group) when is_binary(idp) do
+  def query(idp, _group) when is_binary(idp) do
     {:error, "IdP record is required"}
   end
 
@@ -69,7 +69,7 @@ defmodule Shin.Metrics do
 
   """
   @spec gauge_ids(data :: map()) :: list()
-  def gauge_ids(%{"gauges" => gauges} = data) do
+  def gauge_ids(%{"gauges" => gauges}) do
     Map.keys(gauges)
   end
 
@@ -87,7 +87,7 @@ defmodule Shin.Metrics do
 
   """
   @spec gauge(data :: map(), gauge :: binary()) :: binary | integer
-  def gauge(%{"gauges" => gauges} = data, gauge) do
+  def gauge(%{"gauges" => gauges}, gauge) do
     Map.get(gauges, gauge, %{})
     |> Map.get("value", nil)
   end
@@ -104,7 +104,7 @@ defmodule Shin.Metrics do
 
   """
   @spec gauges(data :: map()) :: map()
-  def gauges(%{"gauges" => gauges} = data) do
+  def gauges(%{"gauges" => gauges}) do
     gauges
     |> Enum.map(
          fn {gauge_id, inner} ->
@@ -128,7 +128,7 @@ defmodule Shin.Metrics do
 
   """
   @spec map_gauges(data :: map(), keymap :: map()) :: map()
-  def map_gauges(%{"gauges" => gauges} = data, keymap) do
+  def map_gauges(%{"gauges" => gauges}, keymap) do
     keymap
     |> Enum.map(
          fn {new_key, gauge_id} ->
@@ -154,7 +154,7 @@ defmodule Shin.Metrics do
 
   """
   @spec timer_ids(data :: map()) :: list()
-  def timer_ids(%{"timers" => timers} = data) do
+  def timer_ids(%{"timers" => timers}) do
     Map.keys(timers)
   end
 
@@ -172,7 +172,7 @@ defmodule Shin.Metrics do
 
   """
   @spec timer(data :: map(), timer :: binary()) :: map()
-  def timer(%{"timers" => timers} = data, timer) do
+  def timer(%{"timers" => timers}, timer) do
     Map.get(timers, timer, %{})
   end
 
@@ -188,7 +188,7 @@ defmodule Shin.Metrics do
 
   """
   @spec timers(data :: map()) :: map()
-  def timers(%{"timers" => timers} = data) do
+  def timers(%{"timers" => timers}) do
     timers
     |> Enum.map(
          fn {timer_id, inner} ->
@@ -212,7 +212,7 @@ defmodule Shin.Metrics do
 
   """
   @spec map_timers(data :: map(), keymap :: map()) :: map()
-  def map_timers(%{"timers" => timers} = data, keymap) do
+  def map_timers(%{"timers" => timers}, keymap) do
     keymap
     |> Enum.map(
          fn {new_key, timer_id} ->

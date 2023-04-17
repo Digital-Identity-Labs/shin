@@ -8,7 +8,6 @@ defmodule Shin.Metadata do
   """
   alias Shin.HTTP
   alias Shin.Utils
-  alias Shin.Metrics
   alias Shin.IdP
 
   @doc """
@@ -115,7 +114,7 @@ defmodule Shin.Metadata do
     options = Keyword.merge(options, [type: :text])
     case HTTP.get_data(idp, idp.md_reload_path, query_params, options) do
       {:ok, message} -> {:ok, message}
-      {:error, message} -> {:error, "Metadata reload failed for '#{mdp_id}'"}
+      {:error, _message} -> {:error, "Metadata reload failed for '#{mdp_id}'"}
     end
   end
 
