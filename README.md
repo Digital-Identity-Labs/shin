@@ -1,6 +1,7 @@
+
 # Shin
 
-`Shin` is a simple Elixir client for the [Shibboleth IdP's](https://www.shibboleth.net/products/) admin features.
+![Shin](logo.png) `Shin` is a simple Elixir client for the [Shibboleth IdP's](https://www.shibboleth.net/products/) admin features.
 Currently it can collect metrics and trigger service reloads, fetch metadata and show released user attributes.
 
 Shin can be used to gather information about your IdP servers such as Java version and IdP version, and can also collect any
