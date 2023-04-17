@@ -6,7 +6,7 @@ defmodule Shin.MixProject do
       app: :shin,
       version: "0.2.0",
       elixir: "~> 1.12",
-      description: "Simple HTTP client for the Shibboleth IdP metrics and reload API",
+      description: "Simple HTTP client for the Shibboleth IdP admin APIs",
       package: package(),
       name: "Shin",
       source_url: "https://github.com/Digital-Identity-Labs/shin",
