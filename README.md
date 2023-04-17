@@ -62,7 +62,7 @@ To define an IdP using a default configuration you only need the base URL of the
 
 If your IdP has different paths, metrics groups or reloadable services you can specify them as options.
 
-Functions in the top-level Shin module can also be passed a based URL if no configuration is needed.
+Functions in the top-level Shin module can also be passed a base URL if no configuration is needed.
 
 ### Downloading raw metrics
 
@@ -112,13 +112,13 @@ Shin.Attributes.names(attr_data)
 ### Viewing a simulated SAML2 assertion containing user attributes
 
 ```elixir
-saml_assertion_xml = Shin.assertion!(idp, "https://test.ukfederation.org.uk/entity", "pete")
+{:ok, saml_assertion_xml} = Shin.assertion(idp, "https://test.ukfederation.org.uk/entity", "pete")
 ```
 
 ### Fetching an SP's metadata
 
 ```elixir
-metadata_xml = Shin.metadata!(idp, "https://test.ukfederation.org.uk/entity")
+{:ok, metadata_xml} = Shin.metadata(idp, "https://test.ukfederation.org.uk/entity")
 ```
 
 ## Example Script
